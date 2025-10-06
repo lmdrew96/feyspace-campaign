@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeySpace Campaign - Player Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🚀 FeySpace Campaign</h1>
+            <p class="tagline">N.I.P.P.L.E. Corporation • Kestrel-11 Crew</p>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <button class="nav-btn active" onclick="showSection('home')">Home</button>
+        <button class="nav-btn" onclick="showSection('characters')">Characters</button>
+        <button class="nav-btn" onclick="showSection('resources')">Resources</button>
+        <button class="nav-btn" onclick="showSection('tools')">Tools</button>
+        <button class="nav-btn" onclick="showSection('session-notes')">Session Notes</button>
+    </nav>
+
+    <main>
+        <!-- HOME SECTION -->
+        <section id="home" class="content-section active">
+            <div class="welcome-box">
+                <h2>Welcome to the Kestrel-11</h2>
+                <p>You are crew members aboard N.I.P.P.L.E.'s Kestrel-11 shuttle, delivering packages across the galaxy... and now, somehow, you've ended up in FeySpace.</p>
+                
+                <div class="crew-grid">
+                    <div class="crew-card" onclick="showCharacter('tony')">
+                        <h3>💀 Tony</h3>
+                        <p class="job-title">PEEN - Weapons Specialist</p>
+                        <p class="species">Human Skeleton Bard</p>
+                    </div>
+                    <div class="crew-card" onclick="showCharacter('flow')">
+                        <h3>🫧 Flow</h3>
+                        <p class="job-title">CLIT - Diplomat</p>
+                        <p class="species">Plasmoid Paladin</p>
+                    </div>
+                    <div class="crew-card" onclick="showCharacter('baz')">
+                        <h3>🦗 Baz</h3>
+                        <p class="job-title">ASS - Mechanic</p>
+                        <p class="species">Thri-Kreen Artificer</p>
+                    </div>
+                    <div class="crew-card" onclick="showCharacter('wisp')">
+                        <h3>🔮 Wisp</h3>
+                        <p class="job-title">TOP - Pilot</p>
+                        <p class="species">Goliath Warlock</p>
+                    </div>
+                </div>
+
+                <div class="quick-links">
+                    <h3>Quick Access</h3>
+                    <button onclick="showSection('tools')" class="quick-btn">🎲 Roll Dice</button>
+                    <button onclick="showSection('resources')" class="quick-btn">📖 GTSCs Guide</button>
+                    <button onclick="showSection('session-notes')" class="quick-btn">📝 Session Notes</button>
+                </div>
+            </div>
+
+            <div class="campaign-info">
+                <h3>Current Status</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <strong>Party Level:</strong> <span id="party-level">2</span>
+                    </div>
+                    <div class="status-item">
+                        <strong>Location:</strong> <span id="current-location">FeySpace</span>
+                    </div>
+                    <div class="status-item">
+                        <strong>Ship:</strong> Kestrel-11
+                    </div>
+                    <div class="status-item">
+                        <strong>Campaign Act:</strong> <span id="current-act">Act 2</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHARACTERS SECTION -->
+        <section id="characters" class="content-section">
+            <div class="character-selector">
+                <button class="char-select-btn" onclick="showCharacter('tony')">💀 Tony</button>
+                <button class="char-select-btn" onclick="showCharacter('flow')">🫧 Flow</button>
+                <button class="char-select-btn" onclick="showCharacter('baz')">🦗 Baz</button>
+                <button class="char-select-btn" onclick="showCharacter('wisp')">🔮 Wisp</button>
+            </div>
+            <div id="character-content">
+                <p class="select-prompt">Select a character above to view their details.</p>
+            </div>
+        </section>
+
+        <!-- RESOURCES SECTION -->
+        <section id="resources" class="content-section">
+            <h2>Campaign Resources</h2>
+            
+            <div class="resource-tabs">
+                <button class="tab-btn active" onclick="showResource('gtsc')">Giant Talking Space Cats</button>
+                <button class="tab-btn" onclick="showResource('ship')">Ship Manual</button>
+                <button class="tab-btn" onclick="showResource('nipple')">N.I.P.P.L.E. Info</button>
+                <button class="tab-btn" onclick="showResource('feyspace')">FeySpace Lore</button>
+            </div>
+
+            <div id="resource-content"></div>
+        </section>
+
+        <!-- TOOLS SECTION -->
+        <section id="tools" class="content-section">
+            <h2>Player Tools</h2>
+            
+            <div class="tools-grid">
+                <!-- Dice Roller -->
+                <div class="tool-card">
+                    <h3>🎲 Dice Roller</h3>
+                    <div class="dice-buttons">
+                        <button onclick="rollDice(4)">d4</button>
+                        <button onclick="rollDice(6)">d6</button>
+                        <button onclick="rollDice(8)">d8</button>
+                        <button onclick="rollDice(10)">d10</button>
+                        <button onclick="rollDice(12)">d12</button>
+                        <button onclick="rollDice(20)">d20</button>
+                        <button onclick="rollDice(100)">d100</button>
+                    </div>
+                    <div class="dice-advanced">
+                        <input type="number" id="num-dice" value="1" min="1" max="20" style="width: 50px;">
+                        <span>d</span>
+                        <input type="number" id="dice-sides" value="20" min="2" max="100" style="width: 50px;">
+                        <span>+</span>
+                        <input type="number" id="dice-modifier" value="0" min="-20" max="20" style="width: 50px;">
+                        <button onclick="rollCustomDice()">Roll</button>
+                    </div>
+                    <div id="dice-result" class="dice-result"></div>
+                    <div id="dice-history" class="dice-history"></div>
+                </div>
+
+                <!-- Inventory Tracker -->
+                <div class="tool-card">
+                    <h3>🎒 Party Inventory</h3>
+                    <div class="inventory-controls">
+                        <input type="text" id="item-name" placeholder="Item name">
+                        <input type="number" id="item-quantity" value="1" min="1" style="width: 50px;">
+                        <button onclick="addInventoryItem()">Add Item</button>
+                    </div>
+                    <div id="inventory-list" class="inventory-list"></div>
+                </div>
+
+                <!-- Level Progress Tracker -->
+                <div class="tool-card">
+                    <h3>⭐ Level Progress</h3>
+                    <div class="level-info">
+                        <p><strong>Current Level:</strong> <span id="current-level">2</span></p>
+                        <p><strong>Milestones Completed:</strong> <span id="milestones-completed">0</span> / <span id="milestones-needed">3</span></p>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <div class="milestone-controls">
+                        <button onclick="addMilestone()">Complete Milestone</button>
+                        <button onclick="resetMilestones()">Reset Progress</button>
+                    </div>
+                    <div id="milestone-list" class="milestone-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SESSION NOTES SECTION -->
+        <section id="session-notes" class="content-section">
+            <h2>📝 Session Notes</h2>
+            
+            <div class="session-controls">
+                <button onclick="addSession()">+ New Session</button>
+                <button onclick="exportNotes()">Export Notes</button>
+            </div>
+
+            <div id="sessions-list" class="sessions-list"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>FeySpace Campaign • N.I.P.P.L.E. Corporation: We Go All the Way</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
