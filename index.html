@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FeySpace Campaign - Player Hub</title>
+    <title>FeySpace Campaign - Enhanced Hub</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Graph Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/dist/vis-network.min.css" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -15,65 +20,64 @@
     </header>
 
     <nav class="main-nav">
-        <button class="nav-btn active" onclick="showSection('home')">Home</button>
-        <button class="nav-btn" onclick="showSection('characters')">Characters</button>
-        <button class="nav-btn" onclick="showSection('resources')">Resources</button>
-        <button class="nav-btn" onclick="showSection('tools')">Tools</button>
-        <button class="nav-btn" onclick="showSection('session-notes')">Session Notes</button>
+        <button class="nav-btn active" onclick="showSection('dashboard')">📊 Dashboard</button>
+        <button class="nav-btn" onclick="showSection('characters')">👥 Characters</button>
+        <button class="nav-btn" onclick="showSection('wiki')">📚 Campaign Wiki</button>
+        <button class="nav-btn" onclick="showSection('sessions')">🎮 Session Manager</button>
+        <button class="nav-btn" onclick="showSection('tools')">🎲 Tools</button>
+        <button class="nav-btn" onclick="showSection('compendium')">📖 Compendium</button>
     </nav>
 
     <main>
-        <!-- HOME SECTION -->
-        <section id="home" class="content-section active">
-            <div class="welcome-box">
-                <h2>Welcome to the Kestrel-11</h2>
-                <p>You are crew members aboard N.I.P.P.L.E.'s Kestrel-11 shuttle, delivering packages across the galaxy... and now, somehow, you've ended up in FeySpace.</p>
-                
-                <div class="crew-grid">
-                    <div class="crew-card" onclick="showCharacter('tony')">
-                        <h3>💀 Tony</h3>
-                        <p class="job-title">PEEN - Weapons Specialist</p>
-                        <p class="species">Human Skeleton Bard</p>
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard" class="content-section active">
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h2>📊 Campaign Overview</h2>
+                    <div class="stat-row">
+                        <div class="stat-item">
+                            <span class="stat-label">Party Level</span>
+                            <span class="stat-value" id="dash-party-level">2</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Sessions Played</span>
+                            <span class="stat-value" id="dash-sessions">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Wiki Pages</span>
+                            <span class="stat-value" id="dash-wiki-pages">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">NPCs Met</span>
+                            <span class="stat-value" id="dash-npcs">0</span>
+                        </div>
                     </div>
-                    <div class="crew-card" onclick="showCharacter('flow')">
-                        <h3>🫧 Flow</h3>
-                        <p class="job-title">CLIT - Diplomat</p>
-                        <p class="species">Plasmoid Paladin</p>
-                    </div>
-                    <div class="crew-card" onclick="showCharacter('baz')">
-                        <h3>🦗 Baz</h3>
-                        <p class="job-title">ASS - Mechanic</p>
-                        <p class="species">Thri-Kreen Artificer</p>
-                    </div>
-                    <div class="crew-card" onclick="showCharacter('wisp')">
-                        <h3>🔮 Wisp</h3>
-                        <p class="job-title">TOP - Pilot</p>
-                        <p class="species">Goliath Warlock</p>
+                    <div class="location-info">
+                        <strong>Current Location:</strong> <span id="dash-location">FeySpace</span>
                     </div>
                 </div>
 
-                <div class="quick-links">
-                    <h3>Quick Access</h3>
-                    <button onclick="showSection('tools')" class="quick-btn">🎲 Roll Dice</button>
-                    <button onclick="showSection('resources')" class="quick-btn">📖 GTSCs Guide</button>
-                    <button onclick="showSection('session-notes')" class="quick-btn">📝 Session Notes</button>
+                <div class="dashboard-card">
+                    <h2>🎯 Active Quests</h2>
+                    <div id="active-quests-list">
+                        <p class="empty-state">No active quests. Add quests in the Campaign Wiki.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="campaign-info">
-                <h3>Current Status</h3>
-                <div class="status-grid">
-                    <div class="status-item">
-                        <strong>Party Level:</strong> <span id="party-level">2</span>
+                <div class="dashboard-card">
+                    <h2>📝 Recent Notes</h2>
+                    <div id="recent-notes-list">
+                        <p class="empty-state">No recent notes. Start writing in the Campaign Wiki.</p>
                     </div>
-                    <div class="status-item">
-                        <strong>Location:</strong> <span id="current-location">FeySpace</span>
-                    </div>
-                    <div class="status-item">
-                        <strong>Ship:</strong> Kestrel-11
-                    </div>
-                    <div class="status-item">
-                        <strong>Campaign Act:</strong> <span id="current-act">Act 2</span>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2>⚡ Quick Actions</h2>
+                    <div class="quick-actions">
+                        <button onclick="showSection('sessions'); startCombat()" class="action-btn">⚔️ Start Combat</button>
+                        <button onclick="showSection('wiki'); createNewPage()" class="action-btn">📄 New Wiki Page</button>
+                        <button onclick="showSection('tools')" class="action-btn">🎲 Roll Dice</button>
+                        <button onclick="showSection('sessions'); addSessionNote()" class="action-btn">📝 Session Note</button>
                     </div>
                 </div>
             </div>
@@ -88,30 +92,94 @@
                 <button class="char-select-btn" onclick="showCharacter('wisp')">🔮 Wisp</button>
             </div>
             <div id="character-content">
-                <p class="select-prompt">Select a character above to view their details.</p>
+                <p class="select-prompt">Select a character above to view their interactive sheet.</p>
             </div>
         </section>
 
-        <!-- RESOURCES SECTION -->
-        <section id="resources" class="content-section">
-            <h2>Campaign Resources</h2>
-            
-            <div class="resource-tabs">
-                <button class="tab-btn active" onclick="showResource('gtsc')">Giant Talking Space Cats</button>
-                <button class="tab-btn" onclick="showResource('ship')">Ship Manual</button>
-                <button class="tab-btn" onclick="showResource('nipple')">N.I.P.P.L.E. Info</button>
-                <button class="tab-btn" onclick="showResource('feyspace')">FeySpace Lore</button>
+        <!-- CAMPAIGN WIKI SECTION -->
+        <section id="wiki" class="content-section">
+            <div class="wiki-layout">
+                <aside class="wiki-sidebar">
+                    <div class="wiki-search">
+                        <input type="text" id="wiki-search-input" placeholder="🔍 Search wiki..." onkeyup="searchWiki()">
+                    </div>
+                    <div class="wiki-controls">
+                        <button onclick="createNewPage()" class="wiki-btn">+ New Page</button>
+                        <button onclick="showGraphView()" class="wiki-btn">🕸️ Graph View</button>
+                    </div>
+                    <div class="wiki-tags">
+                        <h3>Tags</h3>
+                        <div id="wiki-tags-list"></div>
+                    </div>
+                    <div class="wiki-pages">
+                        <h3>All Pages</h3>
+                        <div id="wiki-pages-list"></div>
+                    </div>
+                </aside>
+                <main class="wiki-main">
+                    <div id="wiki-content">
+                        <div class="wiki-welcome">
+                            <h2>📚 Campaign Wiki</h2>
+                            <p>Create interconnected notes about NPCs, locations, factions, and lore.</p>
+                            <h3>Features:</h3>
+                            <ul>
+                                <li><strong>Wiki Links:</strong> Use [[Page Name]] to link to other pages</li>
+                                <li><strong>Markdown:</strong> Full markdown support for formatting</li>
+                                <li><strong>Tags:</strong> Use #tag to categorize pages</li>
+                                <li><strong>Backlinks:</strong> See what pages link to the current page</li>
+                                <li><strong>Graph View:</strong> Visualize connections between pages</li>
+                            </ul>
+                            <button onclick="createNewPage()" class="primary-btn">Create Your First Page</button>
+                        </div>
+                    </div>
+                </main>
+                <aside class="wiki-backlinks">
+                    <h3>Backlinks</h3>
+                    <div id="wiki-backlinks-list">
+                        <p class="empty-state">No backlinks</p>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- SESSION MANAGER SECTION -->
+        <section id="sessions" class="content-section">
+            <div class="session-tabs">
+                <button class="session-tab active" onclick="showSessionTab('combat')">⚔️ Combat Tracker</button>
+                <button class="session-tab" onclick="showSessionTab('notes')">📝 Session Notes</button>
             </div>
 
-            <div id="resource-content"></div>
+            <!-- Combat Tracker -->
+            <div id="combat-tracker" class="session-tab-content active">
+                <div class="combat-controls">
+                    <button onclick="startCombat()" class="combat-btn">▶️ Start Combat</button>
+                    <button onclick="nextTurn()" class="combat-btn" id="next-turn-btn" disabled>⏭️ Next Turn</button>
+                    <button onclick="endCombat()" class="combat-btn" id="end-combat-btn" disabled>⏹️ End Combat</button>
+                    <button onclick="addCombatant()" class="combat-btn">➕ Add Combatant</button>
+                </div>
+                <div id="combat-round-info" class="combat-round-info" style="display: none;">
+                    <span>Round: <strong id="combat-round">1</strong></span>
+                    <span>Current Turn: <strong id="current-turn-name">-</strong></span>
+                </div>
+                <div id="initiative-list" class="initiative-list">
+                    <p class="empty-state">No combatants. Click "Add Combatant" to begin.</p>
+                </div>
+            </div>
+
+            <!-- Session Notes -->
+            <div id="session-notes-tab" class="session-tab-content">
+                <div class="session-controls">
+                    <button onclick="addSessionNote()">+ New Session</button>
+                    <button onclick="exportNotes()">📥 Export Notes</button>
+                </div>
+                <div id="sessions-list" class="sessions-list"></div>
+            </div>
         </section>
 
         <!-- TOOLS SECTION -->
         <section id="tools" class="content-section">
-            <h2>Player Tools</h2>
-            
             <div class="tools-grid">
-                <!-- Dice Roller -->
+                <!-- Enhanced Dice Roller -->
                 <div class="tool-card">
                     <h3>🎲 Dice Roller</h3>
                     <div class="dice-buttons">
@@ -124,62 +192,133 @@
                         <button onclick="rollDice(100)">d100</button>
                     </div>
                     <div class="dice-advanced">
-                        <input type="number" id="num-dice" value="1" min="1" max="20" style="width: 50px;">
+                        <input type="number" id="num-dice" value="1" min="1" max="20">
                         <span>d</span>
-                        <input type="number" id="dice-sides" value="20" min="2" max="100" style="width: 50px;">
+                        <input type="number" id="dice-sides" value="20" min="2" max="100">
                         <span>+</span>
-                        <input type="number" id="dice-modifier" value="0" min="-20" max="20" style="width: 50px;">
+                        <input type="number" id="dice-modifier" value="0" min="-20" max="20">
                         <button onclick="rollCustomDice()">Roll</button>
+                    </div>
+                    <div class="dice-advantage">
+                        <label><input type="checkbox" id="advantage"> Advantage</label>
+                        <label><input type="checkbox" id="disadvantage"> Disadvantage</label>
                     </div>
                     <div id="dice-result" class="dice-result"></div>
                     <div id="dice-history" class="dice-history"></div>
                 </div>
 
-                <!-- Inventory Tracker -->
+                <!-- Party Inventory -->
                 <div class="tool-card">
                     <h3>🎒 Party Inventory</h3>
                     <div class="inventory-controls">
                         <input type="text" id="item-name" placeholder="Item name">
-                        <input type="number" id="item-quantity" value="1" min="1" style="width: 50px;">
-                        <button onclick="addInventoryItem()">Add Item</button>
+                        <input type="number" id="item-quantity" value="1" min="1">
+                        <input type="number" id="item-weight" placeholder="Weight" step="0.1" min="0">
+                        <button onclick="addInventoryItem()">Add</button>
+                    </div>
+                    <div class="inventory-stats">
+                        <span>Total Weight: <strong id="total-weight">0</strong> lbs</span>
                     </div>
                     <div id="inventory-list" class="inventory-list"></div>
                 </div>
 
-                <!-- Level Progress Tracker -->
+                <!-- Level Progress -->
                 <div class="tool-card">
                     <h3>⭐ Level Progress</h3>
                     <div class="level-info">
                         <p><strong>Current Level:</strong> <span id="current-level">2</span></p>
-                        <p><strong>Milestones Completed:</strong> <span id="milestones-completed">0</span> / <span id="milestones-needed">3</span></p>
+                        <p><strong>Milestones:</strong> <span id="milestones-completed">0</span> / <span id="milestones-needed">3</span></p>
                     </div>
                     <div class="progress-bar-container">
                         <div id="progress-bar" class="progress-bar"></div>
                     </div>
                     <div class="milestone-controls">
                         <button onclick="addMilestone()">Complete Milestone</button>
-                        <button onclick="resetMilestones()">Reset Progress</button>
+                        <button onclick="resetMilestones()">Reset</button>
                     </div>
                     <div id="milestone-list" class="milestone-list"></div>
+                </div>
+
+                <!-- Encounter Builder -->
+                <div class="tool-card">
+                    <h3>👹 Encounter Builder</h3>
+                    <div class="encounter-controls">
+                        <label>Party Level: <input type="number" id="encounter-level" value="2" min="1" max="20"></label>
+                        <label>Party Size: <input type="number" id="party-size" value="4" min="1" max="10"></label>
+                        <select id="encounter-difficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                            <option value="deadly">Deadly</option>
+                        </select>
+                        <button onclick="generateEncounter()">Generate</button>
+                    </div>
+                    <div id="encounter-result"></div>
                 </div>
             </div>
         </section>
 
-        <!-- SESSION NOTES SECTION -->
-        <section id="session-notes" class="content-section">
-            <h2>📝 Session Notes</h2>
-            
-            <div class="session-controls">
-                <button onclick="addSession()">+ New Session</button>
-                <button onclick="exportNotes()">Export Notes</button>
+        <!-- COMPENDIUM SECTION -->
+        <section id="compendium" class="content-section">
+            <div class="compendium-layout">
+                <aside class="compendium-sidebar">
+                    <input type="text" id="compendium-search" placeholder="🔍 Search..." onkeyup="searchCompendium()">
+                    <div class="compendium-categories">
+                        <button class="category-btn active" onclick="showCompendiumCategory('spells')">✨ Spells</button>
+                        <button class="category-btn" onclick="showCompendiumCategory('items')">⚔️ Items</button>
+                        <button class="category-btn" onclick="showCompendiumCategory('monsters')">👹 Monsters</button>
+                        <button class="category-btn" onclick="showCompendiumCategory('rules')">📜 Rules</button>
+                    </div>
+                </aside>
+                <main class="compendium-main">
+                    <div id="compendium-content">
+                        <h2>📖 Compendium</h2>
+                        <p>Browse spells, items, monsters, and rules reference.</p>
+                    </div>
+                </main>
             </div>
-
-            <div id="sessions-list" class="sessions-list"></div>
         </section>
     </main>
 
+    <!-- Graph View Modal -->
+    <div id="graph-modal" class="modal">
+        <div class="modal-content graph-modal-content">
+            <div class="modal-header">
+                <h2>🕸️ Campaign Graph</h2>
+                <button onclick="closeGraphView()" class="close-btn">✕</button>
+            </div>
+            <div id="graph-container"></div>
+        </div>
+    </div>
+
+    <!-- Wiki Page Editor Modal -->
+    <div id="wiki-editor-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="editor-title">New Page</h2>
+                <button onclick="closeWikiEditor()" class="close-btn">✕</button>
+            </div>
+            <div class="wiki-editor">
+                <input type="text" id="page-title-input" placeholder="Page Title">
+                <div class="editor-toolbar">
+                    <button onclick="insertMarkdown('**', '**')" title="Bold">B</button>
+                    <button onclick="insertMarkdown('*', '*')" title="Italic">I</button>
+                    <button onclick="insertMarkdown('[[', ']]')" title="Link">🔗</button>
+                    <button onclick="insertMarkdown('#', '')" title="Tag">#</button>
+                    <button onclick="togglePreview()" id="preview-btn">👁️ Preview</button>
+                </div>
+                <textarea id="page-content-input" placeholder="Write your content here... Use [[Page Name]] for links and #tag for tags"></textarea>
+                <div id="page-preview" class="page-preview" style="display: none;"></div>
+                <div class="editor-actions">
+                    <button onclick="saveWikiPage()" class="primary-btn">💾 Save</button>
+                    <button onclick="closeWikiEditor()" class="secondary-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
-        <p>FeySpace Campaign • N.I.P.P.L.E. Corporation: We Go All the Way</p>
+        <p>FeySpace Campaign • Enhanced with D&D Beyond + Obsidian Features</p>
     </footer>
 
     <script src="script.js"></script>
