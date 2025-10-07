@@ -269,6 +269,20 @@
                         <button class="category-btn" onclick="showCompendiumCategory('monsters')">👹 Monsters</button>
                         <button class="category-btn" onclick="showCompendiumCategory('rules')">📜 Rules</button>
                     </div>
+                    <div class="compendium-filters">
+                        <h4>Sort By</h4>
+                        <select id="compendium-sort" onchange="updateCompendiumSort()">
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="level-asc" class="spell-only">Level (Low-High)</option>
+                            <option value="level-desc" class="spell-only">Level (High-Low)</option>
+                            <option value="cr-asc" class="monster-only">CR (Low-High)</option>
+                            <option value="cr-desc" class="monster-only">CR (High-Low)</option>
+                            <option value="rarity-asc" class="item-only">Rarity</option>
+                        </select>
+                        <h4 id="filter-header">Filters</h4>
+                        <div id="compendium-filter-options"></div>
+                    </div>
                 </aside>
                 <main class="compendium-main">
                     <div id="compendium-content">
@@ -277,6 +291,7 @@
                     </div>
                 </main>
             </div>
+            <button id="back-to-top" onclick="scrollToTop()" title="Return to top">↑</button>
         </section>
     </main>
 
@@ -284,7 +299,7 @@
     <div id="graph-modal" class="modal">
         <div class="modal-content graph-modal-content">
             <div class="modal-header">
-                <h2>🕸️ Campaign Graph</h2>
+                <h2>�️ Campaign Graph</h2>
                 <button onclick="closeGraphView()" class="close-btn">✕</button>
             </div>
             <div id="graph-container"></div>

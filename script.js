@@ -1308,6 +1308,264 @@ function generateEncounter() {
 // ===== COMPENDIUM =====
 const compendiumData = {
     spells: [
+        // === FEYWILD SPELLS ===
+        {
+            name: "Fey Step",
+            level: 2,
+            school: "Conjuration",
+            castingTime: "1 bonus action",
+            range: "Self",
+            components: "V",
+            duration: "Instantaneous",
+            description: "You teleport up to 30 feet to an unoccupied space you can see. You briefly shimmer with silvery mist as you vanish and reappear. This spell taps into the natural magic of the Feywild, allowing you to slip between spaces as the fey do.",
+            higherLevels: "When you cast this spell using a spell slot of 3rd level or higher, the distance increases by 10 feet for each slot level above 2nd."
+        },
+        {
+            name: "Moonbeam",
+            level: 2,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "120 feet",
+            components: "V, S, M (several seeds of any moonseed plant and a piece of opalescent feldspar)",
+            duration: "Concentration, up to 1 minute",
+            description: "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-high cylinder centered on a point within range. Until the spell ends, dim light fills the cylinder. When a creature enters the spell's area for the first time on a turn or starts its turn there, it must make a Constitution saving throw. It takes 2d10 radiant damage on a failed save, or half as much on a successful one. A shapechanger makes its saving throw with disadvantage. If it fails, it instantly reverts to its original form and can't assume a different form until it leaves the spell's light.",
+            higherLevels: "When you cast this spell using a spell slot of 3rd level or higher, the damage increases by 1d10 for each slot level above 2nd."
+        },
+        {
+            name: "Summon Fey",
+            level: 3,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "90 feet",
+            components: "V, S, M (a gilded flower worth at least 300 gp)",
+            duration: "Concentration, up to 1 hour",
+            description: "You call forth a fey spirit. It manifests in an unoccupied space that you can see within range. This corporeal form uses the Fey Spirit stat block. When you cast the spell, choose a mood: Fuming, Mirthful, or Tricksy. The creature resembles a fey creature of your choice marked by the chosen mood, which determines certain traits in its stat block. The creature disappears when it drops to 0 hit points or when the spell ends.",
+            higherLevels: "When you cast this spell using a spell slot of 4th level or higher, use the higher level wherever the spell's level appears in the stat block."
+        },
+        {
+            name: "Charm Monster",
+            level: 4,
+            school: "Enchantment",
+            castingTime: "1 action",
+            range: "30 feet",
+            components: "V, S",
+            duration: "1 hour",
+            description: "You attempt to charm a creature you can see within range. It must make a Wisdom saving throw, and it does so with advantage if you or your companions are fighting it. If it fails the saving throw, it is charmed by you until the spell ends or until you or your companions do anything harmful to it. The charmed creature is friendly to you. When the spell ends, the creature knows it was charmed by you.",
+            higherLevels: "When you cast this spell using a spell slot of 5th level or higher, you can target one additional creature for each slot level above 4th."
+        },
+        {
+            name: "Conjure Woodland Beings",
+            level: 4,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "60 feet",
+            components: "V, S, M (one holly berry per creature summoned)",
+            duration: "Concentration, up to 1 hour",
+            description: "You summon fey creatures that appear in unoccupied spaces that you can see within range. Choose one of the following options: One fey creature of CR 2 or lower, Two fey creatures of CR 1 or lower, Four fey creatures of CR 1/2 or lower, Eight fey creatures of CR 1/4 or lower. The summoned creatures are friendly to you and your companions. Roll initiative for the summoned creatures as a group. They obey any verbal commands that you issue to them. If you don't issue any commands, they defend themselves from hostile creatures but otherwise take no actions.",
+            higherLevels: "When you cast this spell using certain higher-level spell slots, you choose one of the summoning options above, and more creatures appear: twice as many with a 6th-level slot and three times as many with an 8th-level slot."
+        },
+        {
+            name: "Faerie Fire",
+            level: 1,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "60 feet",
+            components: "V",
+            duration: "Concentration, up to 1 minute",
+            description: "Each object in a 20-foot cube within range is outlined in blue, green, or violet light (your choice). Any creature in the area when the spell is cast is also outlined in light if it fails a Dexterity saving throw. For the duration, objects and affected creatures shed dim light in a 10-foot radius. Any attack roll against an affected creature or object has advantage if the attacker can see it, and the affected creature or object can't benefit from being invisible.",
+            higherLevels: ""
+        },
+        {
+            name: "Entangle",
+            level: 1,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "90 feet",
+            components: "V, S",
+            duration: "Concentration, up to 1 minute",
+            description: "Grasping weeds and vines sprout from the ground in a 20-foot square starting from a point within range. For the duration, these plants turn the ground in the area into difficult terrain. A creature in the area when you cast the spell must succeed on a Strength saving throw or be restrained by the entangling plants until the spell ends. A creature restrained by the plants can use its action to make a Strength check against your spell save DC. On a success, it frees itself.",
+            higherLevels: ""
+        },
+        {
+            name: "Barkskin",
+            level: 2,
+            school: "Transmutation",
+            castingTime: "1 action",
+            range: "Touch",
+            components: "V, S, M (a handful of oak bark)",
+            duration: "Concentration, up to 1 hour",
+            description: "You touch a willing creature. Until the spell ends, the target's skin has a rough, bark-like appearance, and the target's AC can't be less than 16, regardless of what kind of armor it is wearing.",
+            higherLevels: ""
+        },
+        {
+            name: "Polymorph",
+            level: 4,
+            school: "Transmutation",
+            castingTime: "1 action",
+            range: "60 feet",
+            components: "V, S, M (a caterpillar cocoon)",
+            duration: "Concentration, up to 1 hour",
+            description: "This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect. The spell has no effect on a shapechanger or a creature with 0 hit points. The transformation lasts for the duration, or until the target drops to 0 hit points or dies. The new form can be any beast whose challenge rating is equal to or less than the target's (or the target's level, if it doesn't have a challenge rating).",
+            higherLevels: ""
+        },
+        {
+            name: "Mislead",
+            level: 5,
+            school: "Illusion",
+            castingTime: "1 action",
+            range: "Self",
+            components: "S",
+            duration: "Concentration, up to 1 hour",
+            description: "You become invisible at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends if you attack or cast a spell. You can use your action to move your illusory double up to twice your speed and make it gesture, speak, and behave in whatever way you choose. You can see through its eyes and hear through its ears as if you were located where it is.",
+            higherLevels: ""
+        },
+        {
+            name: "Dream",
+            level: 5,
+            school: "Illusion",
+            castingTime: "1 minute",
+            range: "Special",
+            components: "V, S, M (a handful of sand, a dab of ink, and a writing quill plucked from a sleeping bird)",
+            duration: "8 hours",
+            description: "This spell shapes a creature's dreams. Choose a creature known to you as the target of this spell. The target must be on the same plane of existence as you. Creatures that don't sleep, such as elves, can't be contacted by this spell. You, or a willing creature you touch, enters a trance state, acting as a messenger. While in the trance, the messenger is aware of their surroundings, but can't take actions or move. If the target is asleep, the messenger appears in the target's dreams and can converse with the target as long as it remains asleep, through the duration of the spell.",
+            higherLevels: ""
+        },
+        {
+            name: "Seeming",
+            level: 5,
+            school: "Illusion",
+            castingTime: "1 action",
+            range: "30 feet",
+            components: "V, S",
+            duration: "8 hours",
+            description: "This spell allows you to change the appearance of any number of creatures that you can see within range. You give each target you choose a new, illusory appearance. An unwilling target can make a Charisma saving throw, and if it succeeds, it is unaffected by this spell. The spell disguises physical appearance as well as clothing, armor, weapons, and equipment. You can make each creature seem 1 foot shorter or taller and appear thin, fat, or in between. You can't change a target's body type, so you must choose a form that has the same basic arrangement of limbs.",
+            higherLevels: ""
+        },
+        {
+            name: "Geas",
+            level: 5,
+            school: "Enchantment",
+            castingTime: "1 minute",
+            range: "60 feet",
+            components: "V",
+            duration: "30 days",
+            description: "You place a magical command on a creature that you can see within range, forcing it to carry out some service or refrain from some action or course of activity as you decide. If the creature can understand you, it must succeed on a Wisdom saving throw or become charmed by you for the duration. While the creature is charmed by you, it takes 5d10 psychic damage each time it acts in a manner directly counter to your instructions, but no more than once each day. A creature that can't understand you is unaffected by the spell.",
+            higherLevels: "When you cast this spell using a spell slot of 7th or 8th level, the duration is 1 year. When you use a 9th level spell slot, the spell lasts until it is ended by one of the spells mentioned above."
+        },
+        
+        // === FEYSPACE SPELLS (Spelljammer + Feywild Blend) ===
+        {
+            name: "Prismatic Void",
+            level: 6,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "150 feet",
+            components: "V, S, M (a prism filled with stardust worth 500 gp)",
+            duration: "Instantaneous",
+            description: "You create a swirling vortex of rainbow-colored void energy at a point you can see within range. The vortex is a 20-foot-radius sphere that pulls creatures toward its center. Each creature in the area must make a Strength saving throw. On a failed save, a creature takes 8d8 force damage and is pulled 20 feet toward the center. On a successful save, the creature takes half damage and isn't pulled. Creatures pulled into the center take an additional 4d8 psychic damage as they experience the disorienting blend of Feywild magic and wildspace void. This spell is particularly effective in wildspace, where the void energy resonates with the surrounding emptiness.",
+            higherLevels: "When you cast this spell using a spell slot of 7th level or higher, the force damage increases by 1d8 for each slot level above 6th."
+        },
+        {
+            name: "Fey Helm Attunement",
+            level: 3,
+            school: "Transmutation",
+            castingTime: "1 action",
+            range: "Touch",
+            components: "V, S, M (a spelljamming helm and a fey flower)",
+            duration: "8 hours",
+            description: "You infuse a spelljamming helm with fey magic, allowing it to draw power from the emotions and dreams of its operator rather than spell slots. For the duration, a creature attuned to the helm can operate it without expending spell slots. Instead, the ship's speed equals 5 × the operator's Charisma modifier (minimum 5) miles per hour. However, the operator must make a DC 12 Wisdom saving throw each hour or gain one level of exhaustion as the fey magic draws upon their life force. The helm shimmers with iridescent colors while this spell is active.",
+            higherLevels: "When you cast this spell using a spell slot of 4th level or higher, the duration increases by 4 hours for each slot level above 3rd."
+        },
+        {
+            name: "Starlight Glamour",
+            level: 2,
+            school: "Illusion",
+            castingTime: "1 action",
+            range: "Self",
+            components: "V, S, M (a piece of meteorite)",
+            duration: "1 hour",
+            description: "You cloak yourself in an illusion woven from starlight and fey magic. For the duration, you appear to be made of living starlight, and you shed bright light in a 10-foot radius and dim light for an additional 10 feet. You have advantage on Charisma (Performance) and Charisma (Persuasion) checks. Additionally, when a creature within 10 feet of you hits you with an attack, you can use your reaction to cause the attacker to make a Wisdom saving throw. On a failed save, the attacker is blinded until the end of its next turn as the starlight flares brilliantly.",
+            higherLevels: "When you cast this spell using a spell slot of 3rd level or higher, you can affect one additional willing creature you touch for each slot level above 2nd."
+        },
+        {
+            name: "Void Blossom",
+            level: 4,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "60 feet",
+            components: "V, S, M (a flower preserved in amber)",
+            duration: "Concentration, up to 10 minutes",
+            description: "You cause a massive, ethereal flower to bloom in wildspace at a point you can see. The flower is 30 feet in diameter and creates a breathable atmosphere within a 60-foot radius. The air is fresh and scented with a pleasant floral aroma. Additionally, the flower emits bright light in a 60-foot radius and dim light for an additional 60 feet. Creatures within the flower's atmosphere have advantage on saving throws against fear and charm effects. The flower is intangible and doesn't impede movement or attacks.",
+            higherLevels: "When you cast this spell using a spell slot of 5th level or higher, the radius of the atmosphere increases by 10 feet for each slot level above 4th."
+        },
+        {
+            name: "Astral Thorn Barrier",
+            level: 3,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "120 feet",
+            components: "V, S, M (a thorn from a plant native to the Feywild)",
+            duration: "Concentration, up to 10 minutes",
+            description: "You create a wall of shimmering, crystalline thorns that appears at a point you choose within range. The wall is 60 feet long, 10 feet high, and 5 feet thick. The wall provides three-quarters cover and its space is difficult terrain. When a creature enters the wall's space for the first time on a turn or starts its turn there, it must make a Dexterity saving throw. On a failed save, it takes 4d8 piercing damage and is restrained until the start of its next turn. On a successful save, it takes half damage and isn't restrained. The thorns shimmer with astral energy and can exist in the void of wildspace.",
+            higherLevels: "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d8 for each slot level above 3rd."
+        },
+        {
+            name: "Summon Feyspace Sprite",
+            level: 2,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "60 feet",
+            components: "V, S, M (a tiny crystal sphere worth 50 gp)",
+            duration: "Concentration, up to 1 hour",
+            description: "You summon a feyspace sprite, a tiny fey creature adapted to life in wildspace. The sprite appears in an unoccupied space you can see within range and uses the sprite stat block, but it can survive in the void of space and has a flying speed of 60 feet. The sprite is friendly to you and your companions and obeys your verbal commands. It can scout ahead in wildspace, deliver messages, and provide advantage on one attack roll, ability check, or saving throw of your choice before the spell ends (no action required).",
+            higherLevels: "When you cast this spell using a spell slot of 3rd level or higher, you summon one additional sprite for each slot level above 2nd."
+        },
+        {
+            name: "Chromatic Comet",
+            level: 5,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "300 feet",
+            components: "V, S, M (a fragment of a comet)",
+            duration: "Instantaneous",
+            description: "You hurl a comet of pure fey energy infused with wildspace magic at a point you can see within range. The comet explodes in a 40-foot-radius sphere of rainbow-colored energy. Each creature in the area must make a Dexterity saving throw. On a failed save, a creature takes 6d6 force damage and 6d6 radiant damage and is knocked prone. On a successful save, it takes half damage and isn't knocked prone. Additionally, the area becomes filled with glittering motes of light that provide dim light for 1 minute. This spell is particularly devastating when cast in wildspace, where the comet's trajectory is unimpeded.",
+            higherLevels: "When you cast this spell using a spell slot of 6th level or higher, either the force damage or the radiant damage (your choice) increases by 1d6 for each slot level above 5th."
+        },
+        {
+            name: "Fey Portal",
+            level: 7,
+            school: "Conjuration",
+            castingTime: "1 minute",
+            range: "60 feet",
+            components: "V, S, M (a silver mirror worth 5,000 gp)",
+            duration: "Concentration, up to 10 minutes",
+            description: "You create a shimmering portal to the Feywild at a point you can see within range. The portal is a circular opening 10 feet in diameter. Any creature that enters the portal is instantly transported to a location in the Feywild of your choice (if you've been there before) or to a random location in the Feywild (if you haven't). The portal remains open for the duration, allowing two-way travel. When cast in wildspace, the portal can also connect to fey-touched regions of wildspace, creating shortcuts through the void. The portal shimmers with all the colors of the rainbow and emits a soft, musical hum.",
+            higherLevels: "When you cast this spell using a spell slot of 8th level or higher, the duration increases to 1 hour. When you use a 9th level spell slot, the portal remains open for 8 hours."
+        },
+        {
+            name: "Stellar Transformation",
+            level: 6,
+            school: "Transmutation",
+            castingTime: "1 action",
+            range: "Self",
+            components: "V, S, M (a piece of star metal worth 1,000 gp)",
+            duration: "Concentration, up to 10 minutes",
+            description: "You transform yourself into a being of living starlight infused with fey magic. For the duration, you gain the following benefits: You have a flying speed of 60 feet and can hover. You shed bright light in a 30-foot radius and dim light for an additional 30 feet. You have resistance to radiant and force damage. You can move through other creatures and objects as if they were difficult terrain, taking 1d10 force damage if you end your turn inside an object. Once per turn, you can teleport up to 30 feet to an unoccupied space you can see as part of your movement. Your appearance becomes that of a humanoid figure made of swirling starlight and fey energy.",
+            higherLevels: ""
+        },
+        {
+            name: "Gravity Reversal",
+            level: 4,
+            school: "Transmutation",
+            castingTime: "1 action",
+            range: "120 feet",
+            components: "V, S, M (a lodestone and a feather)",
+            duration: "Concentration, up to 1 minute",
+            description: "You reverse gravity in a 50-foot-radius, 100-foot-high cylinder centered on a point within range. All creatures and objects that aren't somehow anchored to the ground in the area fall upward and reach the top of the area when you cast this spell. A creature can make a Dexterity saving throw to grab onto a fixed object it can reach, thus avoiding the fall. If some solid object (such as a ceiling) is encountered in this fall, falling objects and creatures strike it just as they would during a normal downward fall. If an object or creature reaches the top of the area without striking anything, it remains there, oscillating slightly, for the duration. At the end of the duration, affected objects and creatures fall back down. This spell is particularly useful in wildspace for repositioning during ship combat.",
+            higherLevels: "When you cast this spell using a spell slot of 5th level or higher, the radius increases by 10 feet for each slot level above 4th."
+        },
+        
+        // === ORIGINAL SPELLJAMMER SPELLS ===
         {
             name: "Air Bubble",
             level: 2,
