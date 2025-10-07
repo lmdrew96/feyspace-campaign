@@ -19,10 +19,85 @@ let campaignData = {
         round: 1,
         currentTurn: 0,
         combatants: []
+    },
+    characters: {
+        tony: {
+            name: 'Tony',
+            maxHp: 16,
+            currentHp: 16,
+            tempHp: 0,
+            hitDice: 2,
+            maxHitDice: 2,
+            hitDie: 8,
+            conModifier: 1,
+            spellSlots: {
+                1: { max: 3, current: 3 },
+                2: { max: 0, current: 0 },
+                3: { max: 0, current: 0 },
+                4: { max: 0, current: 0 },
+                5: { max: 0, current: 0 }
+            },
+            conditions: []
+        },
+        flow: {
+            name: 'Flow',
+            maxHp: 20,
+            currentHp: 20,
+            tempHp: 0,
+            hitDice: 2,
+            maxHitDice: 2,
+            hitDie: 10,
+            conModifier: 2,
+            spellSlots: {
+                1: { max: 3, current: 3 },
+                2: { max: 0, current: 0 },
+                3: { max: 0, current: 0 },
+                4: { max: 0, current: 0 },
+                5: { max: 0, current: 0 }
+            },
+            conditions: []
+        },
+        baz: {
+            name: 'Baz',
+            maxHp: 18,
+            currentHp: 18,
+            tempHp: 0,
+            hitDice: 2,
+            maxHitDice: 2,
+            hitDie: 8,
+            conModifier: 1,
+            spellSlots: {
+                1: { max: 2, current: 2 },
+                2: { max: 0, current: 0 },
+                3: { max: 0, current: 0 },
+                4: { max: 0, current: 0 },
+                5: { max: 0, current: 0 }
+            },
+            conditions: []
+        },
+        wisp: {
+            name: 'Wisp',
+            maxHp: 19,
+            currentHp: 19,
+            tempHp: 0,
+            hitDice: 2,
+            maxHitDice: 2,
+            hitDie: 8,
+            conModifier: 2,
+            spellSlots: {
+                1: { max: 2, current: 2 },
+                2: { max: 0, current: 0 },
+                3: { max: 0, current: 0 },
+                4: { max: 0, current: 0 },
+                5: { max: 0, current: 0 }
+            },
+            conditions: []
+        }
     }
 };
 
 let diceHistory = [];
+let dicePresets = [];
 let currentWikiPage = null;
 let previewMode = false;
 let graphNetwork = null;
@@ -36,6 +111,38 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLevelProgressDisplay();
     updateSessionsDisplay();
     updateDiceHistory();
+    
+    // Make advantage/disadvantage mutually exclusive
+    const advantageCheckbox = document.getElementById('advantage');
+    const disadvantageCheckbox = document.getElementById('disadvantage');
+    
+    if (advantageCheckbox && disadvantageCheckbox) {
+        advantageCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                disadvantageCheckbox.checked = false;
+            }
+        });
+        
+        disadvantageCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                advantageCheckbox.checked = false;
+            }
+        });
+    }
+    
+    // Load dice history from localStorage
+    const savedHistory = localStorage.getItem('feyspace-dice-history');
+    if (savedHistory) {
+        diceHistory = JSON.parse(savedHistory);
+        updateDiceHistory();
+    }
+    
+    // Load dice presets from localStorage
+    const savedPresets = localStorage.getItem('feyspace-dice-presets');
+    if (savedPresets) {
+        dicePresets = JSON.parse(savedPresets);
+        updatePresetsList();
+    }
 });
 
 function loadCampaignData() {
@@ -60,7 +167,8 @@ function showSection(sectionId) {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    const activeBtn = document.querySelector(`[onclick*="'${sectionId}'"]`);
+    if (activeBtn) activeBtn.classList.add('active');
     
     if (sectionId === 'dashboard') {
         updateDashboard();
@@ -137,9 +245,15 @@ function showCharacter(charName) {
     };
     
     document.getElementById('character-content').innerHTML = characters[charName];
+    
+    // Initialize HP display after the HTML is rendered
+    setTimeout(() => {
+        updateHPDisplay(charName);
+    }, 0);
 }
 
 function getTonySheet() {
+    const char = campaignData.characters.tony;
     return `
         <div class="character-sheet interactive">
             <div class="character-header">
@@ -149,35 +263,59 @@ function getTonySheet() {
             </div>
             
             <div class="char-stats-grid">
-                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'STR')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'STR', 'Tony')">
                     <div class="stat-name">STR</div>
                     <div class="stat-value">10</div>
                     <div class="stat-mod">+0</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'DEX')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'DEX', 'Tony')">
                     <div class="stat-name">DEX</div>
                     <div class="stat-value">14</div>
                     <div class="stat-mod">+2</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'CON')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'CON', 'Tony')">
                     <div class="stat-name">CON</div>
                     <div class="stat-value">12</div>
                     <div class="stat-mod">+1</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'INT')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'INT', 'Tony')">
                     <div class="stat-name">INT</div>
                     <div class="stat-value">10</div>
                     <div class="stat-mod">+0</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'WIS')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'WIS', 'Tony')">
                     <div class="stat-name">WIS</div>
                     <div class="stat-value">12</div>
                     <div class="stat-mod">+1</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'CHA')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'CHA', 'Tony')">
                     <div class="stat-name">CHA</div>
                     <div class="stat-value">16</div>
                     <div class="stat-mod">+3</div>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Hit Points</h3>
+                <div class="hp-tracker">
+                    <div class="hp-display">
+                        <span class="hp-current" id="tony-hp-current">${char.currentHp}</span> / 
+                        <span class="hp-max">${char.maxHp}</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="tony-hp-bar" style="width: ${(char.currentHp / char.maxHp) * 100}%"></div>
+                    </div>
+                    <div class="hp-controls">
+                        <button onclick="modifyHP('tony', -5)">-5</button>
+                        <button onclick="modifyHP('tony', -1)">-1</button>
+                        <button onclick="modifyHP('tony', 1)">+1</button>
+                        <button onclick="modifyHP('tony', 5)">+5</button>
+                    </div>
+                    <div class="temp-hp">
+                        <label>Temp HP:</label>
+                        <input type="number" id="tony-temp-hp" value="${char.tempHp}" min="0">
+                        <button onclick="applyTempHP('tony')">Set</button>
+                    </div>
                 </div>
             </div>
 
@@ -189,10 +327,6 @@ function getTonySheet() {
                         <span>14</span>
                     </div>
                     <div class="combat-stat">
-                        <strong>HP</strong>
-                        <span>16</span>
-                    </div>
-                    <div class="combat-stat">
                         <strong>Speed</strong>
                         <span>30 ft</span>
                     </div>
@@ -200,6 +334,55 @@ function getTonySheet() {
                         <strong>Initiative</strong>
                         <span>+2</span>
                     </div>
+                </div>
+            </div>
+
+            <div id="roll-results-tony" class="roll-results"></div>
+
+            <div class="char-section">
+                <h3>Spell Slots</h3>
+                <div class="spell-slots-section">
+                    ${char.spellSlots[1].max > 0 ? `
+                    <div class="spell-level">
+                        <strong>Level 1</strong>
+                        <div class="slot-checkboxes">
+                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
+                                <input type="checkbox" id="tony-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('tony', 1, ${i+1})">
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="rest-buttons">
+                    <button onclick="shortRest('tony')">Short Rest</button>
+                    <button onclick="longRest('tony')">Long Rest</button>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Conditions</h3>
+                <div class="conditions-tracker">
+                    <div class="condition-select">
+                        <select id="tony-condition-select">
+                            <option value="">-- Add Condition --</option>
+                            <option value="blinded">Blinded</option>
+                            <option value="charmed">Charmed</option>
+                            <option value="deafened">Deafened</option>
+                            <option value="frightened">Frightened</option>
+                            <option value="grappled">Grappled</option>
+                            <option value="incapacitated">Incapacitated</option>
+                            <option value="invisible">Invisible</option>
+                            <option value="paralyzed">Paralyzed</option>
+                            <option value="petrified">Petrified</option>
+                            <option value="poisoned">Poisoned</option>
+                            <option value="prone">Prone</option>
+                            <option value="restrained">Restrained</option>
+                            <option value="stunned">Stunned</option>
+                            <option value="unconscious">Unconscious</option>
+                        </select>
+                        <button onclick="addCondition('tony')">Add</button>
+                    </div>
+                    <div id="tony-active-conditions" class="active-conditions"></div>
                 </div>
             </div>
 
@@ -213,6 +396,7 @@ function getTonySheet() {
 }
 
 function getFlowSheet() {
+    const char = campaignData.characters.flow;
     return `
         <div class="character-sheet interactive">
             <div class="character-header">
@@ -222,35 +406,59 @@ function getFlowSheet() {
             </div>
             
             <div class="char-stats-grid">
-                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'STR')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'STR', 'Flow')">
                     <div class="stat-name">STR</div>
                     <div class="stat-value">16</div>
                     <div class="stat-mod">+3</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'DEX')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'DEX', 'Flow')">
                     <div class="stat-name">DEX</div>
                     <div class="stat-value">10</div>
                     <div class="stat-mod">+0</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'CON')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'CON', 'Flow')">
                     <div class="stat-name">CON</div>
                     <div class="stat-value">14</div>
                     <div class="stat-mod">+2</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'INT')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'INT', 'Flow')">
                     <div class="stat-name">INT</div>
                     <div class="stat-value">12</div>
                     <div class="stat-mod">+1</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'WIS')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'WIS', 'Flow')">
                     <div class="stat-name">WIS</div>
                     <div class="stat-value">10</div>
                     <div class="stat-mod">+0</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'CHA')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'CHA', 'Flow')">
                     <div class="stat-name">CHA</div>
                     <div class="stat-value">16</div>
                     <div class="stat-mod">+3</div>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Hit Points</h3>
+                <div class="hp-tracker">
+                    <div class="hp-display">
+                        <span class="hp-current" id="flow-hp-current">${char.currentHp}</span> / 
+                        <span class="hp-max">${char.maxHp}</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="flow-hp-bar" style="width: ${(char.currentHp / char.maxHp) * 100}%"></div>
+                    </div>
+                    <div class="hp-controls">
+                        <button onclick="modifyHP('flow', -5)">-5</button>
+                        <button onclick="modifyHP('flow', -1)">-1</button>
+                        <button onclick="modifyHP('flow', 1)">+1</button>
+                        <button onclick="modifyHP('flow', 5)">+5</button>
+                    </div>
+                    <div class="temp-hp">
+                        <label>Temp HP:</label>
+                        <input type="number" id="flow-temp-hp" value="${char.tempHp}" min="0">
+                        <button onclick="applyTempHP('flow')">Set</button>
+                    </div>
                 </div>
             </div>
 
@@ -262,10 +470,6 @@ function getFlowSheet() {
                         <span>16</span>
                     </div>
                     <div class="combat-stat">
-                        <strong>HP</strong>
-                        <span>20</span>
-                    </div>
-                    <div class="combat-stat">
                         <strong>Speed</strong>
                         <span>30 ft</span>
                     </div>
@@ -273,6 +477,55 @@ function getFlowSheet() {
                         <strong>Initiative</strong>
                         <span>+0</span>
                     </div>
+                </div>
+            </div>
+
+            <div id="roll-results-flow" class="roll-results"></div>
+
+            <div class="char-section">
+                <h3>Spell Slots</h3>
+                <div class="spell-slots-section">
+                    ${char.spellSlots[1].max > 0 ? `
+                    <div class="spell-level">
+                        <strong>Level 1</strong>
+                        <div class="slot-checkboxes">
+                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
+                                <input type="checkbox" id="flow-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('flow', 1, ${i+1})">
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="rest-buttons">
+                    <button onclick="shortRest('flow')">Short Rest</button>
+                    <button onclick="longRest('flow')">Long Rest</button>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Conditions</h3>
+                <div class="conditions-tracker">
+                    <div class="condition-select">
+                        <select id="flow-condition-select">
+                            <option value="">-- Add Condition --</option>
+                            <option value="blinded">Blinded</option>
+                            <option value="charmed">Charmed</option>
+                            <option value="deafened">Deafened</option>
+                            <option value="frightened">Frightened</option>
+                            <option value="grappled">Grappled</option>
+                            <option value="incapacitated">Incapacitated</option>
+                            <option value="invisible">Invisible</option>
+                            <option value="paralyzed">Paralyzed</option>
+                            <option value="petrified">Petrified</option>
+                            <option value="poisoned">Poisoned</option>
+                            <option value="prone">Prone</option>
+                            <option value="restrained">Restrained</option>
+                            <option value="stunned">Stunned</option>
+                            <option value="unconscious">Unconscious</option>
+                        </select>
+                        <button onclick="addCondition('flow')">Add</button>
+                    </div>
+                    <div id="flow-active-conditions" class="active-conditions"></div>
                 </div>
             </div>
 
@@ -286,6 +539,7 @@ function getFlowSheet() {
 }
 
 function getBazSheet() {
+    const char = campaignData.characters.baz;
     return `
         <div class="character-sheet interactive">
             <div class="character-header">
@@ -295,35 +549,59 @@ function getBazSheet() {
             </div>
             
             <div class="char-stats-grid">
-                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'STR')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'STR', 'Baz')">
                     <div class="stat-name">STR</div>
                     <div class="stat-value">14</div>
                     <div class="stat-mod">+2</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'DEX')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'DEX', 'Baz')">
                     <div class="stat-name">DEX</div>
                     <div class="stat-value">14</div>
                     <div class="stat-mod">+2</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'CON')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'CON', 'Baz')">
                     <div class="stat-name">CON</div>
                     <div class="stat-value">12</div>
                     <div class="stat-mod">+1</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'INT')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'INT', 'Baz')">
                     <div class="stat-name">INT</div>
                     <div class="stat-value">16</div>
                     <div class="stat-mod">+3</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'WIS')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(1, 'WIS', 'Baz')">
                     <div class="stat-name">WIS</div>
                     <div class="stat-value">12</div>
                     <div class="stat-mod">+1</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(-1, 'CHA')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(-1, 'CHA', 'Baz')">
                     <div class="stat-name">CHA</div>
                     <div class="stat-value">8</div>
                     <div class="stat-mod">-1</div>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Hit Points</h3>
+                <div class="hp-tracker">
+                    <div class="hp-display">
+                        <span class="hp-current" id="baz-hp-current">${char.currentHp}</span> / 
+                        <span class="hp-max">${char.maxHp}</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="baz-hp-bar" style="width: ${(char.currentHp / char.maxHp) * 100}%"></div>
+                    </div>
+                    <div class="hp-controls">
+                        <button onclick="modifyHP('baz', -5)">-5</button>
+                        <button onclick="modifyHP('baz', -1)">-1</button>
+                        <button onclick="modifyHP('baz', 1)">+1</button>
+                        <button onclick="modifyHP('baz', 5)">+5</button>
+                    </div>
+                    <div class="temp-hp">
+                        <label>Temp HP:</label>
+                        <input type="number" id="baz-temp-hp" value="${char.tempHp}" min="0">
+                        <button onclick="applyTempHP('baz')">Set</button>
+                    </div>
                 </div>
             </div>
 
@@ -335,10 +613,6 @@ function getBazSheet() {
                         <span>15</span>
                     </div>
                     <div class="combat-stat">
-                        <strong>HP</strong>
-                        <span>18</span>
-                    </div>
-                    <div class="combat-stat">
                         <strong>Speed</strong>
                         <span>30 ft</span>
                     </div>
@@ -346,6 +620,55 @@ function getBazSheet() {
                         <strong>Initiative</strong>
                         <span>+2</span>
                     </div>
+                </div>
+            </div>
+
+            <div id="roll-results-baz" class="roll-results"></div>
+
+            <div class="char-section">
+                <h3>Spell Slots</h3>
+                <div class="spell-slots-section">
+                    ${char.spellSlots[1].max > 0 ? `
+                    <div class="spell-level">
+                        <strong>Level 1</strong>
+                        <div class="slot-checkboxes">
+                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
+                                <input type="checkbox" id="baz-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('baz', 1, ${i+1})">
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="rest-buttons">
+                    <button onclick="shortRest('baz')">Short Rest</button>
+                    <button onclick="longRest('baz')">Long Rest</button>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Conditions</h3>
+                <div class="conditions-tracker">
+                    <div class="condition-select">
+                        <select id="baz-condition-select">
+                            <option value="">-- Add Condition --</option>
+                            <option value="blinded">Blinded</option>
+                            <option value="charmed">Charmed</option>
+                            <option value="deafened">Deafened</option>
+                            <option value="frightened">Frightened</option>
+                            <option value="grappled">Grappled</option>
+                            <option value="incapacitated">Incapacitated</option>
+                            <option value="invisible">Invisible</option>
+                            <option value="paralyzed">Paralyzed</option>
+                            <option value="petrified">Petrified</option>
+                            <option value="poisoned">Poisoned</option>
+                            <option value="prone">Prone</option>
+                            <option value="restrained">Restrained</option>
+                            <option value="stunned">Stunned</option>
+                            <option value="unconscious">Unconscious</option>
+                        </select>
+                        <button onclick="addCondition('baz')">Add</button>
+                    </div>
+                    <div id="baz-active-conditions" class="active-conditions"></div>
                 </div>
             </div>
 
@@ -359,6 +682,7 @@ function getBazSheet() {
 }
 
 function getWispSheet() {
+    const char = campaignData.characters.wisp;
     return `
         <div class="character-sheet interactive">
             <div class="character-header">
@@ -368,35 +692,59 @@ function getWispSheet() {
             </div>
             
             <div class="char-stats-grid">
-                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'STR')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(3, 'STR', 'Wisp')">
                     <div class="stat-name">STR</div>
                     <div class="stat-value">16</div>
                     <div class="stat-mod">+3</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'DEX')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'DEX', 'Wisp')">
                     <div class="stat-name">DEX</div>
                     <div class="stat-value">10</div>
                     <div class="stat-mod">+0</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'CON')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'CON', 'Wisp')">
                     <div class="stat-name">CON</div>
                     <div class="stat-value">14</div>
                     <div class="stat-mod">+2</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'INT')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(0, 'INT', 'Wisp')">
                     <div class="stat-name">INT</div>
                     <div class="stat-value">10</div>
                     <div class="stat-mod">+0</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(4, 'WIS')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(4, 'WIS', 'Wisp')">
                     <div class="stat-name">WIS</div>
                     <div class="stat-value">18</div>
                     <div class="stat-mod">+4</div>
                 </div>
-                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'CHA')">
+                <div class="stat-block clickable" onclick="rollAbilityCheck(2, 'CHA', 'Wisp')">
                     <div class="stat-name">CHA</div>
                     <div class="stat-value">14</div>
                     <div class="stat-mod">+2</div>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Hit Points</h3>
+                <div class="hp-tracker">
+                    <div class="hp-display">
+                        <span class="hp-current" id="wisp-hp-current">${char.currentHp}</span> / 
+                        <span class="hp-max">${char.maxHp}</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="wisp-hp-bar" style="width: ${(char.currentHp / char.maxHp) * 100}%"></div>
+                    </div>
+                    <div class="hp-controls">
+                        <button onclick="modifyHP('wisp', -5)">-5</button>
+                        <button onclick="modifyHP('wisp', -1)">-1</button>
+                        <button onclick="modifyHP('wisp', 1)">+1</button>
+                        <button onclick="modifyHP('wisp', 5)">+5</button>
+                    </div>
+                    <div class="temp-hp">
+                        <label>Temp HP:</label>
+                        <input type="number" id="wisp-temp-hp" value="${char.tempHp}" min="0">
+                        <button onclick="applyTempHP('wisp')">Set</button>
+                    </div>
                 </div>
             </div>
 
@@ -406,10 +754,6 @@ function getWispSheet() {
                     <div class="combat-stat">
                         <strong>AC</strong>
                         <span>13</span>
-                    </div>
-                    <div class="combat-stat">
-                        <strong>HP</strong>
-                        <span>19</span>
                     </div>
                     <div class="combat-stat">
                         <strong>Speed</strong>
@@ -422,6 +766,55 @@ function getWispSheet() {
                 </div>
             </div>
 
+            <div id="roll-results-wisp" class="roll-results"></div>
+
+            <div class="char-section">
+                <h3>Spell Slots</h3>
+                <div class="spell-slots-section">
+                    ${char.spellSlots[1].max > 0 ? `
+                    <div class="spell-level">
+                        <strong>Level 1</strong>
+                        <div class="slot-checkboxes">
+                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
+                                <input type="checkbox" id="wisp-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('wisp', 1, ${i+1})">
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="rest-buttons">
+                    <button onclick="shortRest('wisp')">Short Rest</button>
+                    <button onclick="longRest('wisp')">Long Rest</button>
+                </div>
+            </div>
+
+            <div class="char-section">
+                <h3>Conditions</h3>
+                <div class="conditions-tracker">
+                    <div class="condition-select">
+                        <select id="wisp-condition-select">
+                            <option value="">-- Add Condition --</option>
+                            <option value="blinded">Blinded</option>
+                            <option value="charmed">Charmed</option>
+                            <option value="deafened">Deafened</option>
+                            <option value="frightened">Frightened</option>
+                            <option value="grappled">Grappled</option>
+                            <option value="incapacitated">Incapacitated</option>
+                            <option value="invisible">Invisible</option>
+                            <option value="paralyzed">Paralyzed</option>
+                            <option value="petrified">Petrified</option>
+                            <option value="poisoned">Poisoned</option>
+                            <option value="prone">Prone</option>
+                            <option value="restrained">Restrained</option>
+                            <option value="stunned">Stunned</option>
+                            <option value="unconscious">Unconscious</option>
+                        </select>
+                        <button onclick="addCondition('wisp')">Add</button>
+                    </div>
+                    <div id="wisp-active-conditions" class="active-conditions"></div>
+                </div>
+            </div>
+
             <div class="char-section">
                 <h3>Personality</h3>
                 <div class="catchphrase">"We chillin'"</div>
@@ -431,16 +824,129 @@ function getWispSheet() {
     `;
 }
 
-function rollAbilityCheck(modifier, ability) {
+function rollAbilityCheck(modifier, ability, characterName) {
     const roll = Math.floor(Math.random() * 20) + 1;
     const total = roll + modifier;
-    alert(`${ability} Check: ${roll} + ${modifier} = ${total}`);
+    
+    displayCharacterRoll(characterName, `${ability} Check`, roll, modifier, total);
+    addToDiceHistory(1, 20, modifier, total);
 }
 
 function rollInitiative(modifier, charName) {
     const roll = Math.floor(Math.random() * 20) + 1;
     const total = roll + modifier;
-    alert(`${charName} Initiative: ${roll} + ${modifier} = ${total}`);
+    
+    displayCharacterRoll(charName, 'Initiative', roll, modifier, total);
+    addToDiceHistory(1, 20, modifier, total);
+}
+
+function displayCharacterRoll(characterName, rollType, roll, modifier, total) {
+    const resultsDiv = document.getElementById(`roll-results-${characterName.toLowerCase()}`);
+    if (!resultsDiv) return;
+    
+    const isCrit = roll === 20;
+    const isFail = roll === 1;
+    
+    let critClass = '';
+    let critEmoji = '';
+    if (isCrit) {
+        critClass = 'crit-success';
+        critEmoji = '🎉 ';
+    } else if (isFail) {
+        critClass = 'crit-fail';
+        critEmoji = '💀 ';
+    }
+    
+    resultsDiv.innerHTML = `
+        <div class="character-roll-result ${critClass}">
+            <strong>${rollType}:</strong> ${critEmoji}${roll} ${modifier >= 0 ? '+' : ''}${modifier} = <span class="total">${total}</span>
+        </div>
+    `;
+    
+    // Clear after 5 seconds
+    setTimeout(() => {
+        if (resultsDiv.innerHTML.includes(rollType)) {
+            resultsDiv.innerHTML = '';
+        }
+    }, 5000);
+}
+
+// ===== HP TRACKING =====
+function modifyHP(characterName, amount) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char) return;
+    
+    if (amount < 0) {
+        // Taking damage - subtract from temp HP first
+        if (char.tempHp > 0) {
+            const tempDamage = Math.min(Math.abs(amount), char.tempHp);
+            char.tempHp -= tempDamage;
+            amount += tempDamage;
+        }
+        char.currentHp = Math.max(0, char.currentHp + amount);
+    } else {
+        // Healing
+        char.currentHp = Math.min(char.maxHp, char.currentHp + amount);
+    }
+    
+    updateHPDisplay(charKey);
+    saveCampaignData();
+}
+
+function updateHPDisplay(charKey) {
+    const char = campaignData.characters[charKey];
+    if (!char) return;
+    
+    const percentage = (char.currentHp / char.maxHp) * 100;
+    
+    const currentHpEl = document.getElementById(`${charKey}-hp-current`);
+    const hpBarEl = document.getElementById(`${charKey}-hp-bar`);
+    const tempHpEl = document.getElementById(`${charKey}-temp-hp`);
+    
+    if (currentHpEl) currentHpEl.textContent = char.currentHp;
+    
+    if (hpBarEl) {
+        hpBarEl.style.width = `${percentage}%`;
+        
+        // Color code the HP bar
+        if (percentage > 50) {
+            hpBarEl.style.background = 'linear-gradient(90deg, var(--success-color), var(--secondary-color))';
+        } else if (percentage > 25) {
+            hpBarEl.style.background = 'linear-gradient(90deg, #f39c12, #e67e22)';
+        } else {
+            hpBarEl.style.background = 'linear-gradient(90deg, var(--accent-color), #c0392b)';
+        }
+    }
+    
+    if (tempHpEl) {
+        tempHpEl.value = char.tempHp;
+    }
+    
+    // Show/hide death saves if HP is 0
+    const deathSavesEl = document.getElementById(`${charKey}-death-saves`);
+    if (deathSavesEl) {
+        deathSavesEl.style.display = char.currentHp === 0 ? 'block' : 'none';
+    }
+}
+
+function applyTempHP(characterName) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char) return;
+    
+    const tempHpInput = document.getElementById(`${charKey}-temp-hp`);
+    if (!tempHpInput) return;
+    
+    const newTempHp = parseInt(tempHpInput.value) || 0;
+    
+    // Temp HP doesn't stack - take the higher value
+    char.tempHp = Math.max(char.tempHp, newTempHp);
+    
+    updateHPDisplay(charKey);
+    saveCampaignData();
 }
 
 // ===== CAMPAIGN WIKI =====
@@ -795,7 +1301,8 @@ function showSessionTab(tabName) {
         content.classList.remove('active');
     });
     
-    event.target.classList.add('active');
+    const activeTab = document.querySelector(`[onclick*="'${tabName}'"]`);
+    if (activeTab) activeTab.classList.add('active');
     document.getElementById(tabName === 'combat' ? 'combat-tracker' : 'session-notes-tab').classList.add('active');
 }
 
@@ -1076,6 +1583,19 @@ function rollCustomDice() {
 function displayDiceResult(numDice, sides, modifier, rolls, total) {
     const resultDiv = document.getElementById('dice-result');
     
+    // Check for critical success/failure (only for d20 rolls)
+    let critClass = '';
+    let critEmoji = '';
+    if (sides === 20 && numDice === 1) {
+        if (rolls[0] === 20) {
+            critClass = 'crit-success';
+            critEmoji = '🎉 ';
+        } else if (rolls[0] === 1) {
+            critClass = 'crit-fail';
+            critEmoji = '💀 ';
+        }
+    }
+    
     let detailText = '';
     if (numDice > 1 || modifier !== 0) {
         detailText = `(${rolls.join(' + ')}`;
@@ -1084,8 +1604,14 @@ function displayDiceResult(numDice, sides, modifier, rolls, total) {
         detailText += ')';
     }
     
+    // Add rolling animation class temporarily
+    resultDiv.classList.add('dice-rolling');
+    setTimeout(() => resultDiv.classList.remove('dice-rolling'), 300);
+    
     resultDiv.innerHTML = `
-        <div style="font-size: 2rem; color: var(--secondary-color);">${total}</div>
+        <div class="dice-result-display ${critClass}" style="font-size: 2.5rem; font-weight: bold; padding: 1rem; border-radius: 8px; margin: 0.5rem 0;">
+            ${critEmoji}${total}
+        </div>
         <div style="font-size: 1rem; color: #666;">${numDice}d${sides}${modifier !== 0 ? (modifier > 0 ? '+' + modifier : modifier) : ''} ${detailText}</div>
     `;
 }
@@ -1095,11 +1621,17 @@ function addToDiceHistory(numDice, sides, modifier, total) {
     const entry = {
         roll: `${numDice}d${sides}${modifier !== 0 ? (modifier > 0 ? '+' + modifier : modifier) : ''}`,
         result: total,
-        time: timestamp
+        time: timestamp,
+        numDice: numDice,
+        sides: sides,
+        modifier: modifier
     };
     
     diceHistory.unshift(entry);
     if (diceHistory.length > 10) diceHistory.pop();
+    
+    // Save to localStorage
+    localStorage.setItem('feyspace-dice-history', JSON.stringify(diceHistory));
     
     updateDiceHistory();
 }
@@ -1113,17 +1645,113 @@ function updateDiceHistory() {
     }
     
     let html = '<div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">';
+    html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">';
     html += '<strong>Recent Rolls:</strong>';
+    html += '<button onclick="clearDiceHistory()" style="font-size: 0.8rem; padding: 0.2rem 0.5rem;">Clear</button>';
+    html += '</div>';
     
-    diceHistory.forEach(entry => {
-        html += `<div style="padding: 0.25rem 0; display: flex; justify-content: space-between;">
+    diceHistory.forEach((entry, index) => {
+        html += `<div style="padding: 0.25rem 0; display: flex; justify-content: space-between; align-items: center;">
             <span>${entry.roll}: <strong>${entry.result}</strong></span>
-            <span style="color: #999; font-size: 0.8rem;">${entry.time}</span>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button onclick="rerollFromHistory(${index})" style="font-size: 0.8rem; padding: 0.2rem 0.5rem;" title="Re-roll">↻</button>
+                <span style="color: #999; font-size: 0.8rem;">${entry.time}</span>
+            </div>
         </div>`;
     });
     
     html += '</div>';
     historyDiv.innerHTML = html;
+}
+
+function clearDiceHistory() {
+    if (confirm('Clear all dice history?')) {
+        diceHistory = [];
+        localStorage.removeItem('feyspace-dice-history');
+        updateDiceHistory();
+    }
+}
+
+function rerollFromHistory(index) {
+    const entry = diceHistory[index];
+    if (!entry) return;
+    
+    // Set the form values
+    document.getElementById('num-dice').value = entry.numDice;
+    document.getElementById('dice-sides').value = entry.sides;
+    document.getElementById('dice-modifier').value = entry.modifier;
+    
+    // Perform the roll
+    rollCustomDice();
+}
+
+// ===== DICE PRESETS =====
+function saveCurrentRoll() {
+    const numDice = parseInt(document.getElementById('num-dice').value);
+    const sides = parseInt(document.getElementById('dice-sides').value);
+    const modifier = parseInt(document.getElementById('dice-modifier').value);
+    
+    const name = prompt('Name this roll preset:');
+    if (!name || !name.trim()) return;
+    
+    const preset = {
+        id: Date.now(),
+        name: name.trim(),
+        numDice: numDice,
+        sides: sides,
+        modifier: modifier,
+        roll: `${numDice}d${sides}${modifier !== 0 ? (modifier > 0 ? '+' + modifier : modifier) : ''}`
+    };
+    
+    dicePresets.push(preset);
+    localStorage.setItem('feyspace-dice-presets', JSON.stringify(dicePresets));
+    updatePresetsList();
+}
+
+function loadPreset(id) {
+    const preset = dicePresets.find(p => p.id === id);
+    if (!preset) return;
+    
+    document.getElementById('num-dice').value = preset.numDice;
+    document.getElementById('dice-sides').value = preset.sides;
+    document.getElementById('dice-modifier').value = preset.modifier;
+    
+    rollCustomDice();
+}
+
+function deletePreset(id) {
+    if (!confirm('Delete this preset?')) return;
+    
+    dicePresets = dicePresets.filter(p => p.id !== id);
+    localStorage.setItem('feyspace-dice-presets', JSON.stringify(dicePresets));
+    updatePresetsList();
+}
+
+function updatePresetsList() {
+    const listDiv = document.getElementById('preset-rolls-list');
+    
+    if (dicePresets.length === 0) {
+        listDiv.innerHTML = '<p style="color: #999; font-style: italic; font-size: 0.9rem;">No saved rolls yet</p>';
+        return;
+    }
+    
+    let html = '';
+    dicePresets.forEach(preset => {
+        html += `
+            <div class="preset-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px; margin-bottom: 0.5rem;">
+                <div>
+                    <strong>${preset.name}</strong>
+                    <span style="color: #999; margin-left: 0.5rem;">${preset.roll}</span>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button onclick="loadPreset(${preset.id})" style="font-size: 0.8rem; padding: 0.2rem 0.5rem;">Roll</button>
+                    <button onclick="deletePreset(${preset.id})" style="font-size: 0.8rem; padding: 0.2rem 0.5rem;">✕</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    listDiv.innerHTML = html;
 }
 
 // ===== INVENTORY =====
@@ -1868,7 +2496,7 @@ const compendiumData = {
             rarity: "Uncommon",
             cost: "8,000 gp",
             attunement: "Requires attunement",
-            description: "While wearing this helm, you can use an action to cast the detect thoughts spell (save DC 13) from it. As long as you maintain concentration on the spell, you can use a bonus action to send a telepathic message to a creature you are focused on. It can reply—using a bonus action to do so—while your focus on it continues. Once used, the helm can't cast detect thoughts again until the next dawn."
+            description: "While wearing this helm, you can use an action to cast the detect thoughts spell (save DC 13) from it. As long as you maintain concentration on the spell, you can use a bonus action to send a telepathic message to a creature you are focused on. It can reply-using a bonus action to do so-while your focus on it continues. Once used, the helm can't cast detect thoughts again until the next dawn."
         },
         {
             name: "Decanter of Endless Water",
@@ -1981,7 +2609,7 @@ const compendiumData = {
             stats: { str: 14, dex: 3, con: 20, int: 1, wis: 6, cha: 1 },
             immunities: "Acid, cold, lightning; blinded, charmed, deafened, exhaustion, frightened, prone",
             senses: "Blindsight 60 ft. (blind beyond this radius), Passive Perception 8",
-            languages: "—",
+            languages: "-",
             traits: [
                 { name: "Ooze Cube", description: "The cube takes up its entire space. Other creatures can enter the space, but a creature that does so is subjected to the cube's Engulf and has disadvantage on the saving throw." },
                 { name: "Transparent", description: "Even when the cube is in plain sight, it takes a successful DC 15 Wisdom (Perception) check to spot a cube that has neither moved nor attacked." }
@@ -2024,7 +2652,7 @@ const compendiumData = {
             skills: "Perception +9",
             immunities: "Charmed, exhaustion, frightened, paralyzed, petrified, poisoned, prone, stunned",
             senses: "Darkvision 120 ft., Passive Perception 19",
-            languages: "—",
+            languages: "-",
             traits: [
                 { name: "Antimagic Cone", description: "The dreadnought's opened eye creates an area of antimagic, as in the antimagic field spell, in a 150-foot cone. At the start of each of its turns, it decides which way the cone faces." },
                 { name: "Astral Entity", description: "The dreadnought can't leave the Astral Plane, nor can it be banished or otherwise transported out of that plane." },
@@ -2130,7 +2758,7 @@ const compendiumData = {
             speed: "0 ft., fly 60 ft. (hover)",
             stats: { str: 22, dex: 10, con: 17, int: 3, wis: 12, cha: 7 },
             senses: "Blindsight 120 ft., Passive Perception 11",
-            languages: "—",
+            languages: "-",
             traits: [
                 { name: "Echolocation", description: "The kindori can't use its blindsight while deafened." },
                 { name: "Hold Breath", description: "The kindori can hold its breath for 1 hour." },
@@ -2151,7 +2779,7 @@ const compendiumData = {
             stats: { str: 18, dex: 16, con: 15, int: 2, wis: 13, cha: 5 },
             skills: "Perception +4",
             senses: "Darkvision 120 ft., Passive Perception 14",
-            languages: "—",
+            languages: "-",
             traits: [
                 { name: "Void Dweller", description: "The scavver doesn't require air and can survive in the void of space." }
             ],
@@ -2340,7 +2968,8 @@ function showCompendiumCategory(category) {
     document.querySelectorAll('.category-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    const activeBtn = document.querySelector(`[onclick*="'${category}'"]`);
+    if (activeBtn) activeBtn.classList.add('active');
     
     currentCompendiumCategory = category;
     compendiumSearchQuery = '';
@@ -2463,4 +3092,156 @@ function renderCompendium() {
     }
     
     content.innerHTML = html;
+}
+
+// ===== SPELL SLOT TRACKING =====
+function toggleSpellSlot(characterName, level, slotNumber) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char || !char.spellSlots[level]) return;
+    
+    const checkbox = document.getElementById(`${charKey}-slot-${level}-${slotNumber}`);
+    if (!checkbox) return;
+    
+    // Count currently checked slots
+    let checkedCount = 0;
+    for (let i = 1; i <= char.spellSlots[level].max; i++) {
+        const cb = document.getElementById(`${charKey}-slot-${level}-${i}`);
+        if (cb && cb.checked) checkedCount++;
+    }
+    
+    char.spellSlots[level].current = checkedCount;
+    saveCampaignData();
+}
+
+function shortRest(characterName) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char) return;
+    
+    // Warlocks restore spell slots on short rest
+    // For now, just show a message
+    alert(`${char.name} takes a short rest. Some class features may be restored.`);
+    saveCampaignData();
+}
+
+function longRest(characterName) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char) return;
+    
+    // Restore HP to max
+    char.currentHp = char.maxHp;
+    char.tempHp = 0;
+    
+    // Restore all spell slots
+    for (let level in char.spellSlots) {
+        char.spellSlots[level].current = char.spellSlots[level].max;
+    }
+    
+    // Restore hit dice (up to half max)
+    char.hitDice = Math.min(char.maxHitDice, char.hitDice + Math.floor(char.maxHitDice / 2));
+    
+    updateHPDisplay(charKey);
+    
+    // Update spell slot checkboxes if character sheet is currently displayed
+    for (let level in char.spellSlots) {
+        for (let i = 1; i <= char.spellSlots[level].max; i++) {
+            const checkbox = document.getElementById(`${charKey}-slot-${level}-${i}`);
+            if (checkbox) {
+                checkbox.checked = i <= char.spellSlots[level].current;
+            }
+        }
+    }
+    
+    alert(`${char.name} completes a long rest! HP, spell slots, and hit dice restored.`);
+    saveCampaignData();
+}
+
+// ===== MISSING FUNCTIONS =====
+function scrollToTop() {
+    const compendiumContent = document.getElementById('compendium-content');
+    if (compendiumContent) {
+        compendiumContent.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+}
+
+function updateCompendiumSort() {
+    renderCompendium();
+}
+
+// ===== CONDITIONS TRACKER =====
+function addCondition(characterName) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char) return;
+    
+    const selectElement = document.getElementById(`${charKey}-condition-select`);
+    if (!selectElement) return;
+    
+    const condition = selectElement.value;
+    if (!condition) return;
+    
+    // Check if condition already exists
+    if (char.conditions.includes(condition)) {
+        alert(`${char.name} already has the ${condition} condition.`);
+        return;
+    }
+    
+    // Add condition to character data
+    char.conditions.push(condition);
+    
+    // Reset select
+    selectElement.value = '';
+    
+    // Update display
+    updateConditionsDisplay(charKey);
+    saveCampaignData();
+}
+
+function removeCondition(characterName, condition) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char) return;
+    
+    // Remove condition from array
+    char.conditions = char.conditions.filter(c => c !== condition);
+    
+    // Update display
+    updateConditionsDisplay(charKey);
+    saveCampaignData();
+}
+
+function updateConditionsDisplay(charKey) {
+    const char = campaignData.characters[charKey];
+    if (!char) return;
+    
+    const conditionsDiv = document.getElementById(`${charKey}-active-conditions`);
+    if (!conditionsDiv) return;
+    
+    if (char.conditions.length === 0) {
+        conditionsDiv.innerHTML = '<p style="color: #999; font-style: italic; font-size: 0.9rem;">No active conditions</p>';
+        return;
+    }
+    
+    let html = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">';
+    char.conditions.forEach(condition => {
+        html += `
+            <div class="condition-badge" style="background: rgba(231, 76, 60, 0.2); border: 1px solid var(--accent-color); padding: 0.3rem 0.6rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="text-transform: capitalize;">${condition}</span>
+                <button onclick="removeCondition('${charKey}', '${condition}')" style="background: none; border: none; color: var(--accent-color); cursor: pointer; padding: 0; font-size: 1rem; line-height: 1;">✕</button>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    conditionsDiv.innerHTML = html;
 }
