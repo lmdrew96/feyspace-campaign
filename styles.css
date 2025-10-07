@@ -1211,6 +1211,66 @@ main {
     min-height: 600px;
 }
 
+.compendium-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.compendium-item {
+    background-color: var(--bg-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.compendium-item h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.item-meta {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.compendium-item p {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+}
+
+.compendium-item hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 1rem 0;
+}
+
+.monster-stat-block {
+    border-left-color: var(--accent-color);
+}
+
+.monster-stats {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.monster-stats div {
+    background-color: var(--card-bg);
+    padding: 0.5rem;
+    border-radius: 5px;
+}
+
+.monster-stat-block h4 {
+    color: var(--accent-color);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
 /* Footer */
 footer {
     background-color: var(--primary-color);

@@ -1306,17 +1306,903 @@ function generateEncounter() {
 }
 
 // ===== COMPENDIUM =====
+const compendiumData = {
+    spells: [
+        {
+            name: "Air Bubble",
+            level: 2,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "60 feet",
+            components: "S",
+            duration: "24 hours",
+            description: "You create a spectral globe around the head of a willing creature you can see within range. The globe is filled with fresh air that lasts until the spell ends. If the creature has more than one head, the globe of air appears around only one of its heads (which is all the creature needs to avoid suffocation, assuming that all its heads share the same respiratory system).",
+            higherLevels: "When you cast this spell using a spell slot of 3rd level or higher, you can create two additional globes of fresh air for each slot level above 2nd."
+        },
+        {
+            name: "Create Spelljamming Helm",
+            level: 5,
+            school: "Transmutation",
+            castingTime: "1 action",
+            range: "Touch",
+            components: "V, S, M (a crystal rod worth at least 5,000 gp, which the spell consumes)",
+            duration: "Instantaneous",
+            description: "Touching a Large or smaller chair that is on a ship, you transform it into a spelljamming helm. The transformation lasts until the helm is destroyed or until you cast this spell again. If a spellcaster sits in the helm, the ship can move through space and air, using the spellcaster's spell slots as fuel. The ship's speed is based on the level of spell slots expended."
+        },
+        {
+            name: "Gravity Sinkhole",
+            level: 4,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "120 feet",
+            components: "V, S, M (a black marble)",
+            duration: "Instantaneous",
+            description: "A 20-foot-radius sphere of crushing force forms at a point you can see within range and tugs at the creatures there. Each creature in the sphere must make a Constitution saving throw. On a failed save, the creature takes 5d10 force damage and is pulled in a straight line toward the center of the sphere, ending in an unoccupied space as close to the center as possible. On a successful save, the creature takes half as much damage and isn't pulled.",
+            higherLevels: "When you cast this spell using a spell slot of 5th level or higher, the damage increases by 1d10 for each slot level above 4th."
+        },
+        {
+            name: "Warp Sense",
+            level: 2,
+            school: "Divination",
+            castingTime: "1 action",
+            range: "Self",
+            components: "V, S",
+            duration: "Concentration, up to 1 minute",
+            description: "For the duration, you sense the presence of portals, rifts in reality, and other planar anomalies within 1 mile of you. You learn the direction to each anomaly but not its exact location or nature. The spell can penetrate most barriers but is blocked by 1 foot of stone, 1 inch of common metal, or 3 feet of wood or dirt."
+        },
+        {
+            name: "Summon Wildspace Eel",
+            level: 3,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "90 feet",
+            components: "V, S, M (a piece of eel skin)",
+            duration: "Concentration, up to 1 hour",
+            description: "You summon a wildspace eel that appears in an unoccupied space you can see within range. The eel is friendly to you and your companions and obeys your commands. It uses the statistics of a giant constrictor snake but can survive in the vacuum of space. When the spell ends, the eel disappears.",
+            higherLevels: "When you cast this spell using a spell slot of 4th level or higher, you summon one additional eel for each slot level above 3rd."
+        },
+        {
+            name: "Astral Projection",
+            level: 9,
+            school: "Necromancy",
+            castingTime: "1 hour",
+            range: "10 feet",
+            components: "V, S, M (for each creature you affect with this spell, you must provide one jacinth worth at least 1,000 gp and one ornately carved bar of silver worth at least 100 gp, all of which the spell consumes)",
+            duration: "Special",
+            description: "You and up to eight willing creatures within range project your astral bodies into the Astral Plane. The material body you leave behind is unconscious and in a state of suspended animation. Your astral body resembles your mortal form in almost every way, replicating your game statistics and possessions. The spell ends for you and your companions when you use your action to dismiss it. If your astral form drops to 0 hit points, the spell ends for you. If your material body drops to 0 hit points, the spell ends for you."
+        },
+        {
+            name: "Telepathic Bond",
+            level: 5,
+            school: "Divination",
+            castingTime: "1 action",
+            range: "30 feet",
+            components: "V, S, M (pieces of eggshell from two different kinds of creatures)",
+            duration: "1 hour",
+            description: "You forge a telepathic link among up to eight willing creatures of your choice within range, psychically linking each creature to all the others for the duration. Creatures with Intelligence scores of 2 or less aren't affected by this spell. Until the spell ends, the targets can communicate telepathically through the bond whether or not they have a common language. The communication is possible over any distance, though it can't extend to other planes of existence."
+        },
+        {
+            name: "Feather Fall",
+            level: 1,
+            school: "Transmutation",
+            castingTime: "1 reaction, which you take when you or a creature within 60 feet of you falls",
+            range: "60 feet",
+            components: "V, M (a small feather or piece of down)",
+            duration: "1 minute",
+            description: "Choose up to five falling creatures within range. A falling creature's rate of descent slows to 60 feet per round until the spell ends. If the creature lands before the spell ends, it takes no falling damage and can land on its feet, and the spell ends for that creature."
+        },
+        {
+            name: "Dimension Door",
+            level: 4,
+            school: "Conjuration",
+            castingTime: "1 action",
+            range: "500 feet",
+            components: "V",
+            duration: "Instantaneous",
+            description: "You teleport yourself from your current location to any other spot within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction. You can bring along objects as long as their weight doesn't exceed what you can carry. You can also bring one willing creature of your size or smaller who is carrying gear up to its carrying capacity."
+        },
+        {
+            name: "Haste",
+            level: 3,
+            school: "Transmutation",
+            castingTime: "1 action",
+            range: "30 feet",
+            components: "V, S, M (a shaving of licorice root)",
+            duration: "Concentration, up to 1 minute",
+            description: "Choose a willing creature that you can see within range. Until the spell ends, the target's speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns. That action can be used only to take the Attack (one weapon attack only), Dash, Disengage, Hide, or Use an Object action. When the spell ends, the target can't move or take actions until after its next turn, as a wave of lethargy sweeps over it."
+        },
+        {
+            name: "Magic Missile",
+            level: 1,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "120 feet",
+            components: "V, S",
+            duration: "Instantaneous",
+            description: "You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4 + 1 force damage to its target. The darts all strike simultaneously.",
+            higherLevels: "When you cast this spell using a spell slot of 2nd level or higher, the spell creates one more dart for each slot level above 1st."
+        },
+        {
+            name: "Cure Wounds",
+            level: 1,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "Touch",
+            components: "V, S",
+            duration: "Instantaneous",
+            description: "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.",
+            higherLevels: "When you cast this spell using a spell slot of 2nd level or higher, the healing increases by 1d8 for each slot level above 1st."
+        },
+        {
+            name: "Shield",
+            level: 1,
+            school: "Abjuration",
+            castingTime: "1 reaction",
+            range: "Self",
+            components: "V, S",
+            duration: "1 round",
+            description: "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack."
+        },
+        {
+            name: "Fireball",
+            level: 3,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "150 feet",
+            components: "V, S, M (a tiny ball of bat guano and sulfur)",
+            duration: "Instantaneous",
+            description: "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere centered on that point must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one.",
+            higherLevels: "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd."
+        },
+        {
+            name: "Healing Word",
+            level: 1,
+            school: "Evocation",
+            castingTime: "1 bonus action",
+            range: "60 feet",
+            components: "V",
+            duration: "Instantaneous",
+            description: "A creature of your choice that you can see within range regains hit points equal to 1d4 + your spellcasting ability modifier.",
+            higherLevels: "When you cast this spell using a spell slot of 2nd level or higher, the healing increases by 1d4 for each slot level above 1st."
+        },
+        {
+            name: "Counterspell",
+            level: 3,
+            school: "Abjuration",
+            castingTime: "1 reaction",
+            range: "60 feet",
+            components: "S",
+            duration: "Instantaneous",
+            description: "You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect. If it is casting a spell of 4th level or higher, make an ability check using your spellcasting ability. The DC equals 10 + the spell's level. On a success, the creature's spell fails."
+        },
+        {
+            name: "Eldritch Blast",
+            level: 0,
+            school: "Evocation",
+            castingTime: "1 action",
+            range: "120 feet",
+            components: "V, S",
+            duration: "Instantaneous",
+            description: "A beam of crackling energy streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 force damage.",
+            higherLevels: "The spell creates more than one beam when you reach higher levels: two beams at 5th level, three beams at 11th level, and four beams at 17th level."
+        },
+        {
+            name: "Bless",
+            level: 1,
+            school: "Enchantment",
+            castingTime: "1 action",
+            range: "30 feet",
+            components: "V, S, M (a sprinkling of holy water)",
+            duration: "Concentration, up to 1 minute",
+            description: "You bless up to three creatures of your choice within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw."
+        }
+    ],
+    items: [
+        {
+            name: "Longsword",
+            type: "Weapon (martial, melee)",
+            rarity: "Common",
+            cost: "15 gp",
+            weight: "3 lbs",
+            properties: "Versatile (1d10)",
+            description: "A standard longsword. Deals 1d8 slashing damage (or 1d10 if wielded with two hands)."
+        },
+        {
+            name: "Potion of Healing",
+            type: "Potion",
+            rarity: "Common",
+            cost: "50 gp",
+            weight: "0.5 lbs",
+            description: "You regain 2d4 + 2 hit points when you drink this potion. Drinking or administering a potion takes an action."
+        },
+        {
+            name: "Bag of Holding",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "500 gp",
+            weight: "15 lbs",
+            description: "This bag has an interior space considerably larger than its outside dimensions. The bag can hold up to 500 pounds, not exceeding a volume of 64 cubic feet. Retrieving an item from the bag requires an action."
+        },
+        {
+            name: "Rope of Climbing",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "2,000 gp",
+            weight: "3 lbs",
+            description: "This 60-foot length of silk rope can be commanded to move and fasten itself. It can unfasten itself and return to you as a bonus action."
+        },
+        {
+            name: "+1 Weapon",
+            type: "Weapon (any)",
+            rarity: "Uncommon",
+            cost: "Varies",
+            weight: "Varies",
+            description: "You have a +1 bonus to attack and damage rolls made with this magic weapon."
+        },
+        {
+            name: "Cloak of Protection",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "3,500 gp",
+            attunement: "Requires attunement",
+            description: "You gain a +1 bonus to AC and saving throws while you wear this cloak."
+        },
+        {
+            name: "Ring of Spell Storing",
+            type: "Ring",
+            rarity: "Rare",
+            cost: "10,000 gp",
+            attunement: "Requires attunement",
+            description: "This ring stores spells cast into it, holding them until the attuned wearer uses them. The ring can store up to 5 levels worth of spells at a time."
+        },
+        {
+            name: "Immovable Rod",
+            type: "Rod",
+            rarity: "Uncommon",
+            cost: "5,000 gp",
+            weight: "2 lbs",
+            description: "This flat iron rod has a button on one end. You can use an action to press the button, which causes the rod to become magically fixed in place. Until you or another creature uses an action to push the button again, the rod doesn't move, even if it is defying gravity."
+        },
+        {
+            name: "Spelljamming Helm",
+            type: "Wondrous item",
+            rarity: "Rare",
+            cost: "50,000 gp",
+            weight: "50 lbs",
+            attunement: "Requires attunement by a spellcaster",
+            description: "This ornate chair allows a spellcaster to propel and steer a spelljamming ship through space. While attuned and sitting in the helm, you can use your spell slots to move the ship. The ship's speed equals your spellcasting ability modifier × 10 miles per hour in space. You can't cast spells or concentrate on spells while operating the helm."
+        },
+        {
+            name: "Wildspace Orrery",
+            type: "Wondrous item",
+            rarity: "Very Rare",
+            cost: "25,000 gp",
+            weight: "10 lbs",
+            description: "This intricate mechanical model of a crystal sphere shows the positions of celestial bodies. As an action, you can consult the orrery to learn the direction and approximate distance to any known celestial body within the current crystal sphere. The orrery also grants advantage on Intelligence (Arcana) checks related to navigation in wildspace."
+        },
+        {
+            name: "Boots of the Winterlands",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "5,000 gp",
+            attunement: "Requires attunement",
+            description: "These furred boots are snug and feel quite warm. While you wear them, you gain the following benefits: You have resistance to cold damage. You ignore difficult terrain created by ice or snow. You can tolerate temperatures as low as −50 degrees Fahrenheit without any additional protection."
+        },
+        {
+            name: "Necklace of Adaptation",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "1,500 gp",
+            attunement: "Requires attunement",
+            description: "While wearing this necklace, you can breathe normally in any environment, and you have advantage on saving throws made against harmful gases and vapors (such as cloudkill and stinking cloud effects, inhaled poisons, and the breath weapons of some dragons)."
+        },
+        {
+            name: "Sending Stones",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "2,000 gp",
+            weight: "0.5 lbs",
+            description: "Sending stones come in pairs, with each smooth stone carved to match the other so the pairing is easily recognized. While you touch one stone, you can use an action to cast the sending spell from it. The target is the bearer of the other stone. If no creature bears the other stone, you know that fact as soon as you use the stone and don't cast the spell. Once sending is cast through the stones, they can't be used again until the next dawn."
+        },
+        {
+            name: "Helm of Telepathy",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "8,000 gp",
+            attunement: "Requires attunement",
+            description: "While wearing this helm, you can use an action to cast the detect thoughts spell (save DC 13) from it. As long as you maintain concentration on the spell, you can use a bonus action to send a telepathic message to a creature you are focused on. It can reply—using a bonus action to do so—while your focus on it continues. Once used, the helm can't cast detect thoughts again until the next dawn."
+        },
+        {
+            name: "Decanter of Endless Water",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "5,000 gp",
+            weight: "2 lbs",
+            description: "This stoppered flask sloshes when shaken, as if it contains water. The decanter weighs 2 pounds. You can use an action to remove the stopper and speak one of three command words, whereupon an amount of fresh water or salt water (your choice) pours out of the flask. The water stops pouring out at the start of your next turn. Choose from the following options: 'Stream' produces 1 gallon of water. 'Fountain' produces 5 gallons of water. 'Geyser' produces 30 gallons of water that gushes forth in a geyser 30 feet long and 1 foot wide."
+        },
+        {
+            name: "Alchemy Jug",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "6,000 gp",
+            weight: "12 lbs",
+            description: "This ceramic jug appears to be able to hold a gallon of liquid and weighs 12 pounds whether full or empty. Sloshing sounds can be heard from within the jug when it is shaken, even if the jug is empty. You can use an action and name one liquid from the table below to cause the jug to produce the chosen liquid. Afterward, you can uncork the jug as an action and pour that liquid out, up to 2 gallons per minute. The maximum amount of liquid the jug can produce depends on the liquid you named."
+        },
+        {
+            name: "Eversmoking Bottle",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "1,000 gp",
+            weight: "1 lb",
+            description: "Smoke leaks from the lead-stoppered mouth of this brass bottle, which weighs 1 pound. When you use an action to remove the stopper, a cloud of thick smoke pours out in a 60-foot radius from the bottle. The cloud's area is heavily obscured. Each minute the bottle remains open and within the cloud, the radius increases by 10 feet until it reaches its maximum radius of 120 feet. The cloud persists as long as the bottle is open. Closing the bottle requires you to speak its command word as an action."
+        },
+        {
+            name: "Portable Hole",
+            type: "Wondrous item",
+            rarity: "Rare",
+            cost: "8,000 gp",
+            weight: "0 lbs",
+            description: "This fine black cloth, soft as silk, is folded up to the dimensions of a handkerchief. It unfolds into a circular sheet 6 feet in diameter. You can use an action to unfold a portable hole and place it on or against a solid surface, whereupon the portable hole creates an extradimensional hole 10 feet deep. The cylindrical space within the hole exists on a different plane, so it can't be used to create open passages."
+        },
+        {
+            name: "Figurine of Wondrous Power (Silver Raven)",
+            type: "Wondrous item",
+            rarity: "Uncommon",
+            cost: "5,000 gp",
+            weight: "0.5 lbs",
+            description: "This silver statuette of a raven can become a raven for up to 12 hours. Once it has been used, it can't be used again until 2 days have passed. While in raven form, the figurine allows you to cast the animal messenger spell on it at will."
+        }
+    ],
+    monsters: [
+        {
+            name: "Goblin",
+            type: "Small humanoid (goblinoid)",
+            cr: "1/4",
+            ac: 15,
+            hp: "7 (2d6)",
+            speed: "30 ft",
+            stats: { str: 8, dex: 14, con: 10, int: 10, wis: 8, cha: 8 },
+            skills: "Stealth +6",
+            senses: "Darkvision 60 ft., Passive Perception 9",
+            languages: "Common, Goblin",
+            traits: [
+                { name: "Nimble Escape", description: "The goblin can take the Disengage or Hide action as a bonus action on each of its turns." }
+            ],
+            actions: [
+                { name: "Scimitar", description: "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage." },
+                { name: "Shortbow", description: "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage." }
+            ]
+        },
+        {
+            name: "Orc",
+            type: "Medium humanoid (orc)",
+            cr: "1/2",
+            ac: 13,
+            hp: "15 (2d8 + 6)",
+            speed: "30 ft",
+            stats: { str: 16, dex: 12, con: 16, int: 7, wis: 11, cha: 10 },
+            skills: "Intimidation +2",
+            senses: "Darkvision 60 ft., Passive Perception 10",
+            languages: "Common, Orc",
+            traits: [
+                { name: "Aggressive", description: "As a bonus action, the orc can move up to its speed toward a hostile creature that it can see." }
+            ],
+            actions: [
+                { name: "Greataxe", description: "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 9 (1d12 + 3) slashing damage." },
+                { name: "Javelin", description: "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 6 (1d6 + 3) piercing damage." }
+            ]
+        },
+        {
+            name: "Young Red Dragon",
+            type: "Large dragon",
+            cr: "10",
+            ac: 18,
+            hp: "178 (17d10 + 85)",
+            speed: "40 ft., climb 40 ft., fly 80 ft.",
+            stats: { str: 23, dex: 10, con: 21, int: 14, wis: 11, cha: 19 },
+            saves: "Dex +4, Con +9, Wis +4, Cha +8",
+            skills: "Perception +8, Stealth +4",
+            immunities: "Fire",
+            senses: "Blindsight 30 ft., Darkvision 120 ft., Passive Perception 18",
+            languages: "Common, Draconic",
+            traits: [],
+            actions: [
+                { name: "Multiattack", description: "The dragon makes three attacks: one with its bite and two with its claws." },
+                { name: "Bite", description: "Melee Weapon Attack: +10 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 3 (1d6) fire damage." },
+                { name: "Claw", description: "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage." },
+                { name: "Fire Breath (Recharge 5-6)", description: "The dragon exhales fire in a 30-foot cone. Each creature in that area must make a DC 17 Dexterity saving throw, taking 56 (16d6) fire damage on a failed save, or half as much damage on a successful one." }
+            ]
+        },
+        {
+            name: "Gelatinous Cube",
+            type: "Large ooze",
+            cr: "2",
+            ac: 6,
+            hp: "84 (8d10 + 40)",
+            speed: "15 ft",
+            stats: { str: 14, dex: 3, con: 20, int: 1, wis: 6, cha: 1 },
+            immunities: "Acid, cold, lightning; blinded, charmed, deafened, exhaustion, frightened, prone",
+            senses: "Blindsight 60 ft. (blind beyond this radius), Passive Perception 8",
+            languages: "—",
+            traits: [
+                { name: "Ooze Cube", description: "The cube takes up its entire space. Other creatures can enter the space, but a creature that does so is subjected to the cube's Engulf and has disadvantage on the saving throw." },
+                { name: "Transparent", description: "Even when the cube is in plain sight, it takes a successful DC 15 Wisdom (Perception) check to spot a cube that has neither moved nor attacked." }
+            ],
+            actions: [
+                { name: "Pseudopod", description: "Melee Weapon Attack: +4 to hit, reach 5 ft., one creature. Hit: 10 (3d6) acid damage." },
+                { name: "Engulf", description: "The cube moves up to its speed. While doing so, it can enter Large or smaller creatures' spaces. Whenever the cube enters a creature's space, the creature must make a DC 12 Dexterity saving throw." }
+            ]
+        },
+        {
+            name: "Beholder",
+            type: "Large aberration",
+            cr: "13",
+            ac: 18,
+            hp: "180 (19d10 + 76)",
+            speed: "0 ft., fly 20 ft. (hover)",
+            stats: { str: 10, dex: 14, con: 18, int: 17, wis: 15, cha: 17 },
+            saves: "Int +8, Wis +7, Cha +8",
+            skills: "Perception +12",
+            immunities: "Prone",
+            senses: "Darkvision 120 ft., Passive Perception 22",
+            languages: "Deep Speech, Undercommon",
+            traits: [
+                { name: "Antimagic Cone", description: "The beholder's central eye creates an area of antimagic, as in the antimagic field spell, in a 150-foot cone." }
+            ],
+            actions: [
+                { name: "Bite", description: "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 14 (4d6) piercing damage." },
+                { name: "Eye Rays", description: "The beholder shoots three of the following magical eye rays at random (reroll duplicates), choosing one to three targets it can see within 120 feet of it: Charm Ray, Paralyzing Ray, Fear Ray, Slowing Ray, Enervation Ray, Telekinetic Ray, Sleep Ray, Petrification Ray, Disintegration Ray, Death Ray." }
+            ]
+        },
+        {
+            name: "Astral Dreadnought",
+            type: "Gargantuan monstrosity (titan)",
+            cr: "21",
+            ac: 20,
+            hp: "297 (17d20 + 119)",
+            speed: "15 ft., fly 80 ft. (hover)",
+            stats: { str: 28, dex: 7, con: 25, int: 5, wis: 14, cha: 18 },
+            saves: "Dex +5, Wis +9",
+            skills: "Perception +9",
+            immunities: "Charmed, exhaustion, frightened, paralyzed, petrified, poisoned, prone, stunned",
+            senses: "Darkvision 120 ft., Passive Perception 19",
+            languages: "—",
+            traits: [
+                { name: "Antimagic Cone", description: "The dreadnought's opened eye creates an area of antimagic, as in the antimagic field spell, in a 150-foot cone. At the start of each of its turns, it decides which way the cone faces." },
+                { name: "Astral Entity", description: "The dreadnought can't leave the Astral Plane, nor can it be banished or otherwise transported out of that plane." },
+                { name: "Demiplanar Donjon", description: "Anything the dreadnought swallows is transported to a demiplane that can be entered by no other means except a wish spell. A creature can leave the demiplane only by using magic that enables planar travel." }
+            ],
+            actions: [
+                { name: "Multiattack", description: "The dreadnought makes three attacks: one with its bite and two with its claws." },
+                { name: "Bite", description: "Melee Weapon Attack: +16 to hit, reach 10 ft., one target. Hit: 36 (5d10 + 9) force damage. If the target is a Huge or smaller creature and this damage reduces it to 0 hit points or it is incapacitated, the dreadnought swallows it." },
+                { name: "Claw", description: "Melee Weapon Attack: +16 to hit, reach 20 ft., one target. Hit: 19 (3d6 + 9) force damage." }
+            ]
+        },
+        {
+            name: "Neogi Master",
+            type: "Small aberration",
+            cr: "4",
+            ac: 15,
+            hp: "71 (13d6 + 26)",
+            speed: "30 ft., climb 30 ft.",
+            stats: { str: 6, dex: 16, con: 14, int: 16, wis: 12, cha: 18 },
+            saves: "Wis +3",
+            skills: "Arcana +5, Deception +6, Intimidation +6, Perception +3, Persuasion +6",
+            senses: "Darkvision 60 ft., Passive Perception 13",
+            languages: "Common, Deep Speech, Undercommon, telepathy 30 ft.",
+            traits: [
+                { name: "Mental Fortitude", description: "The neogi has advantage on saving throws against being charmed or frightened, and magic can't put it to sleep." },
+                { name: "Spider Climb", description: "The neogi can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check." }
+            ],
+            actions: [
+                { name: "Multiattack", description: "The neogi makes two attacks: one with its bite and one with its claws." },
+                { name: "Bite", description: "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage plus 14 (4d6) poison damage, and the target must succeed on a DC 12 Constitution saving throw or become poisoned for 1 minute." },
+                { name: "Claws", description: "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 8 (2d4 + 3) slashing damage." },
+                { name: "Enslave (Recharge 6)", description: "The neogi targets one creature it can see within 30 feet of it. The target must succeed on a DC 14 Wisdom saving throw or be magically charmed by the neogi for 1 day, or until the neogi dies or is more than 1 mile from the target." }
+            ]
+        },
+        {
+            name: "Giff",
+            type: "Medium humanoid",
+            cr: "3",
+            ac: 16,
+            hp: "60 (8d8 + 24)",
+            speed: "30 ft.",
+            stats: { str: 18, dex: 14, con: 17, int: 11, wis: 12, cha: 12 },
+            senses: "Passive Perception 11",
+            languages: "Common",
+            traits: [
+                { name: "Firearms Knowledge", description: "The giff's mastery of its weapons enables it to ignore the loading property of muskets and pistols." },
+                { name: "Headfirst Charge", description: "The giff can try to knock a creature over; if the giff moves at least 20 feet in a straight line and ends within 5 feet of a Large or smaller creature, that creature must succeed on a DC 14 Strength saving throw or take 7 (2d6) bludgeoning damage and be knocked prone." }
+            ],
+            actions: [
+                { name: "Multiattack", description: "The giff makes two pistol attacks." },
+                { name: "Longsword", description: "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands." },
+                { name: "Musket", description: "Ranged Weapon Attack: +4 to hit, range 40/120 ft., one target. Hit: 8 (1d12 + 2) piercing damage." },
+                { name: "Fragmentation Grenade (1/Day)", description: "The giff throws a grenade up to 60 feet. Each creature within 20 feet of the grenade's detonation must make a DC 15 Dexterity saving throw, taking 17 (5d6) piercing damage on a failed save, or half as much damage on a successful one." }
+            ]
+        },
+        {
+            name: "Plasmoid",
+            type: "Medium ooze",
+            cr: "1/2",
+            ac: 12,
+            hp: "32 (5d8 + 10)",
+            speed: "30 ft.",
+            stats: { str: 10, dex: 15, con: 14, int: 10, wis: 12, cha: 10 },
+            skills: "Stealth +4",
+            immunities: "Acid, poison; poisoned",
+            senses: "Darkvision 60 ft., Passive Perception 11",
+            languages: "Common",
+            traits: [
+                { name: "Amorphous", description: "The plasmoid can move through a space as narrow as 1 inch wide without squeezing." },
+                { name: "Hold Breath", description: "The plasmoid can hold its breath for 1 hour." },
+                { name: "Shape Self", description: "As a bonus action, the plasmoid can reshape its body to give itself a head, one or two arms, one or two legs, all of these, or none of these." }
+            ],
+            actions: [
+                { name: "Pseudopod", description: "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 6 (1d8 + 2) bludgeoning damage plus 3 (1d6) acid damage." }
+            ]
+        },
+        {
+            name: "Hadozee Explorer",
+            type: "Medium humanoid",
+            cr: "1",
+            ac: 13,
+            hp: "22 (4d8 + 4)",
+            speed: "30 ft., climb 30 ft.",
+            stats: { str: 12, dex: 16, con: 12, int: 10, wis: 14, cha: 10 },
+            skills: "Acrobatics +5, Athletics +3, Perception +4, Survival +4",
+            senses: "Passive Perception 14",
+            languages: "Common",
+            traits: [
+                { name: "Glide", description: "When the hadozee falls at least 10 feet, it can use its reaction to extend its skin membranes to glide horizontally a number of feet equal to twice the number of feet it fell, taking no falling damage." }
+            ],
+            actions: [
+                { name: "Multiattack", description: "The hadozee makes two attacks with its dagger or shortbow." },
+                { name: "Dagger", description: "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage." },
+                { name: "Shortbow", description: "Ranged Weapon Attack: +5 to hit, range 80/320 ft., one target. Hit: 6 (1d6 + 3) piercing damage." }
+            ]
+        },
+        {
+            name: "Kindori (Space Whale)",
+            type: "Gargantuan beast",
+            cr: "11",
+            ac: 14,
+            hp: "189 (14d20 + 42)",
+            speed: "0 ft., fly 60 ft. (hover)",
+            stats: { str: 22, dex: 10, con: 17, int: 3, wis: 12, cha: 7 },
+            senses: "Blindsight 120 ft., Passive Perception 11",
+            languages: "—",
+            traits: [
+                { name: "Echolocation", description: "The kindori can't use its blindsight while deafened." },
+                { name: "Hold Breath", description: "The kindori can hold its breath for 1 hour." },
+                { name: "Void Dweller", description: "The kindori doesn't require air and can survive in the void of space." }
+            ],
+            actions: [
+                { name: "Bite", description: "Melee Weapon Attack: +10 to hit, reach 10 ft., one target. Hit: 32 (4d12 + 6) piercing damage." },
+                { name: "Tail Slap", description: "Melee Weapon Attack: +10 to hit, reach 20 ft., one target. Hit: 28 (4d10 + 6) bludgeoning damage." }
+            ]
+        },
+        {
+            name: "Scavver",
+            type: "Huge monstrosity",
+            cr: "5",
+            ac: 13,
+            hp: "85 (10d12 + 20)",
+            speed: "0 ft., fly 40 ft.",
+            stats: { str: 18, dex: 16, con: 15, int: 2, wis: 13, cha: 5 },
+            skills: "Perception +4",
+            senses: "Darkvision 120 ft., Passive Perception 14",
+            languages: "—",
+            traits: [
+                { name: "Void Dweller", description: "The scavver doesn't require air and can survive in the void of space." }
+            ],
+            actions: [
+                { name: "Multiattack", description: "The scavver makes two attacks: one with its bite and one with its tail." },
+                { name: "Bite", description: "Melee Weapon Attack: +7 to hit, reach 10 ft., one target. Hit: 20 (3d10 + 4) piercing damage." },
+                { name: "Tail", description: "Melee Weapon Attack: +7 to hit, reach 15 ft., one target. Hit: 13 (2d8 + 4) bludgeoning damage." }
+            ]
+        },
+        {
+            name: "Vampirate",
+            type: "Medium undead",
+            cr: "5",
+            ac: 15,
+            hp: "82 (11d8 + 33)",
+            speed: "30 ft.",
+            stats: { str: 16, dex: 16, con: 16, int: 11, wis: 13, cha: 14 },
+            saves: "Dex +6, Wis +4",
+            skills: "Perception +4, Stealth +6",
+            immunities: "Necrotic, poison; poisoned",
+            senses: "Darkvision 60 ft., Passive Perception 14",
+            languages: "Common",
+            traits: [
+                { name: "Regeneration", description: "The vampirate regains 10 hit points at the start of its turn if it has at least 1 hit point and isn't in sunlight. If the vampirate takes radiant damage, this trait doesn't function at the start of the vampirate's next turn." },
+                { name: "Spider Climb", description: "The vampirate can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check." },
+                { name: "Sunlight Hypersensitivity", description: "The vampirate takes 20 radiant damage when it starts its turn in sunlight. While in sunlight, it has disadvantage on attack rolls and ability checks." }
+            ],
+            actions: [
+                { name: "Multiattack", description: "The vampirate makes two attacks, only one of which can be a bite attack." },
+                { name: "Bite", description: "Melee Weapon Attack: +6 to hit, reach 5 ft., one willing creature, or a creature that is grappled by the vampirate, incapacitated, or restrained. Hit: 6 (1d6 + 3) piercing damage plus 7 (2d6) necrotic damage. The target's hit point maximum is reduced by an amount equal to the necrotic damage taken." },
+                { name: "Scimitar", description: "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) slashing damage." },
+                { name: "Pistol", description: "Ranged Weapon Attack: +6 to hit, range 30/90 ft., one target. Hit: 8 (1d10 + 3) piercing damage." }
+            ]
+        },
+        {
+            name: "Autognome",
+            type: "Small construct",
+            cr: "1/2",
+            ac: 13,
+            hp: "18 (4d6 + 4)",
+            speed: "30 ft.",
+            stats: { str: 10, dex: 13, con: 12, int: 14, wis: 11, cha: 7 },
+            skills: "Arcana +4, Investigation +4",
+            immunities: "Poison; poisoned",
+            senses: "Darkvision 60 ft., Passive Perception 10",
+            languages: "Common plus one language of its creator",
+            traits: [
+                { name: "Armored Casing", description: "The autognome's AC includes its Dexterity modifier plus its proficiency bonus." },
+                { name: "Healing Machine", description: "If the mending spell is cast on the autognome, it regains 2d6 hit points. In addition, the autognome regains hit points from spare parts used with tinker's tools." },
+                { name: "Mechanical Nature", description: "The autognome doesn't require air, food, drink, or sleep." }
+            ],
+            actions: [
+                { name: "Slam", description: "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) bludgeoning damage." },
+                { name: "Fire Bolt (Cantrip)", description: "Ranged Spell Attack: +4 to hit, range 120 ft., one target. Hit: 5 (1d10) fire damage." }
+            ]
+        }
+    ],
+    rules: [
+        {
+            name: "Advantage and Disadvantage",
+            category: "Core Mechanics",
+            description: "Sometimes a special ability or spell tells you that you have advantage or disadvantage on an ability check, a saving throw, or an attack roll. When that happens, you roll a second d20 when you make the roll. Use the higher of the two rolls if you have advantage, and use the lower roll if you have disadvantage."
+        },
+        {
+            name: "Combat Actions",
+            category: "Combat",
+            description: "On your turn, you can move a distance up to your speed and take one action. Common actions include:\n\n• Attack: Make one melee or ranged attack\n• Cast a Spell: Cast a spell with a casting time of 1 action\n• Dash: Gain extra movement equal to your speed\n• Disengage: Your movement doesn't provoke opportunity attacks\n• Dodge: Attack rolls against you have disadvantage\n• Help: Give an ally advantage on their next ability check or attack\n• Hide: Make a Dexterity (Stealth) check\n• Ready: Prepare an action to trigger on a condition\n• Search: Make a Wisdom (Perception) or Intelligence (Investigation) check\n• Use an Object: Interact with an object"
+        },
+        {
+            name: "Bonus Actions",
+            category: "Combat",
+            description: "Various class features, spells, and other abilities let you take an additional action on your turn called a bonus action. You can take a bonus action only when a special ability, spell, or feature states that you can do something as a bonus action. You can take only one bonus action on your turn."
+        },
+        {
+            name: "Reactions",
+            category: "Combat",
+            description: "Certain special abilities, spells, and situations allow you to take a special action called a reaction. A reaction is an instant response to a trigger of some kind, which can occur on your turn or on someone else's. The most common reaction is the opportunity attack."
+        },
+        {
+            name: "Opportunity Attacks",
+            category: "Combat",
+            description: "You can make an opportunity attack when a hostile creature that you can see moves out of your reach. To make the opportunity attack, you use your reaction to make one melee attack against the provoking creature. The attack occurs right before the creature leaves your reach."
+        },
+        {
+            name: "Cover",
+            category: "Combat",
+            description: "Walls, trees, creatures, and other obstacles can provide cover during combat, making a target more difficult to harm.\n\n• Half Cover: +2 bonus to AC and Dexterity saving throws\n• Three-Quarters Cover: +5 bonus to AC and Dexterity saving throws\n• Total Cover: Can't be targeted directly by an attack or spell"
+        },
+        {
+            name: "Conditions",
+            category: "Combat",
+            description: "Conditions alter a creature's capabilities in a variety of ways:\n\n• Blinded: Can't see, fails ability checks requiring sight, attack rolls have disadvantage, attacks against have advantage\n• Charmed: Can't attack the charmer, charmer has advantage on social checks\n• Frightened: Disadvantage on ability checks and attacks while source is in sight, can't willingly move closer\n• Grappled: Speed becomes 0, can't benefit from bonuses to speed\n• Paralyzed: Incapacitated, can't move or speak, fails Strength and Dexterity saves, attacks have advantage, hits are critical\n• Poisoned: Disadvantage on attack rolls and ability checks\n• Prone: Disadvantage on attack rolls, attacks within 5 ft have advantage, attacks beyond 5 ft have disadvantage\n• Restrained: Speed becomes 0, attacks have disadvantage, attacks against have advantage, disadvantage on Dexterity saves\n• Stunned: Incapacitated, can't move, can speak only falteringly, fails Strength and Dexterity saves, attacks have advantage\n• Unconscious: Incapacitated, can't move or speak, unaware of surroundings, drops what it's holding and falls prone, fails Strength and Dexterity saves, attacks have advantage, hits within 5 ft are critical"
+        },
+        {
+            name: "Resting",
+            category: "Adventuring",
+            description: "Short Rest: A period of downtime, at least 1 hour long, during which you do nothing more strenuous than eating, drinking, reading, and tending to wounds. You can spend Hit Dice to regain hit points.\n\nLong Rest: A period of extended downtime, at least 8 hours long, during which you sleep or perform light activity. At the end, you regain all lost hit points and spent Hit Dice up to half your maximum."
+        },
+        {
+            name: "Death Saving Throws",
+            category: "Combat",
+            description: "When you drop to 0 hit points, you either die outright or fall unconscious. If damage reduces you to 0 hit points and fails to kill you, you fall unconscious and begin making death saving throws.\n\nRoll a d20. On a 10 or higher, you succeed. On a 9 or lower, you fail. On your third success, you become stable. On your third failure, you die. Rolling a 1 counts as two failures. Rolling a 20 restores 1 hit point."
+        },
+        {
+            name: "Concentration",
+            category: "Spellcasting",
+            description: "Some spells require you to maintain concentration to keep their magic active. If you lose concentration, the spell ends.\n\nYou lose concentration if:\n• You cast another concentration spell\n• You take damage (make a Constitution save, DC 10 or half damage taken, whichever is higher)\n• You're incapacitated or killed\n• You're in an environment that prevents concentration"
+        },
+        {
+            name: "Spell Slots",
+            category: "Spellcasting",
+            description: "Spell slots are the resource you expend to cast spells. When you cast a spell, you expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.\n\nCasting a spell at a higher level can increase its power, as described in the spell's description."
+        },
+        {
+            name: "Ability Checks",
+            category: "Core Mechanics",
+            description: "An ability check tests a character's or monster's innate talent and training in an effort to overcome a challenge. The DM calls for an ability check when a character or monster attempts an action (other than an attack) that has a chance of failure.\n\nTo make an ability check, roll a d20 and add the relevant ability modifier. Apply bonuses and penalties, and compare the total to the DC. If the total equals or exceeds the DC, the check succeeds."
+        },
+        {
+            name: "Spelljamming",
+            category: "Wildspace Travel",
+            description: "Spelljamming allows ships to travel through wildspace and the Astral Sea. A spelljamming helm requires attunement by a spellcaster, who can use spell slots to propel the ship.\n\n• Speed: The ship's spelljamming speed equals the helms man's spellcasting ability modifier × 10 miles per hour\n• Air Envelope: Each ship has an air envelope that provides breathable air for 120 days per ton of ship weight\n• Gravity Plane: Ships generate their own gravity, with 'down' being toward the ship's keel\n• Helm Exhaustion: Operating a helm is mentally taxing; the helmsman cannot cast spells or concentrate on spells while at the helm"
+        },
+        {
+            name: "Wildspace Combat",
+            category: "Wildspace Travel",
+            description: "Ship-to-ship combat in wildspace follows special rules:\n\n• Initiative: Ships roll initiative using the helmsman's Dexterity modifier\n• Movement: Ships can move their spelljamming speed and turn up to 90 degrees per round\n• Weapons: Ships can be equipped with ballistae, mangonels, and other siege weapons\n• Boarding: Ships within 10 feet can be boarded; boarding actions use normal combat rules\n• Ramming: A ship can attempt to ram another ship, dealing damage based on size and speed\n• Crew Actions: Crew members can take the Help action to assist with ship operations"
+        },
+        {
+            name: "Air Envelopes",
+            category: "Wildspace Travel",
+            description: "Every object in wildspace is surrounded by an air envelope that provides breathable air:\n\n• Size: An air envelope extends 10 feet beyond the object in all directions per ton of weight\n• Duration: Air remains fresh for 120 days per ton of ship weight divided by the number of breathing creatures\n• Fouling: When air becomes stale, creatures must succeed on a DC 10 Constitution saving throw each hour or gain one level of exhaustion\n• Merging: When two air envelopes overlap, they merge and equalize in quality\n• Replenishment: Fresh air can be obtained from planets, asteroids with atmospheres, or magical means"
+        },
+        {
+            name: "Gravity in Wildspace",
+            category: "Wildspace Travel",
+            description: "Gravity works differently in wildspace:\n\n• Ship Gravity: Each ship generates a gravity plane parallel to its deck. 'Down' is toward the keel\n• Object Gravity: Objects over 1 ton generate their own gravity field\n• Gravity Wells: Large celestial bodies create gravity wells that can pull ships off course\n• Falling: Creatures that fall off a ship continue moving in the same direction at the same speed until they encounter another gravity field\n• Orientation: When entering a new gravity field, creatures can choose their orientation"
+        },
+        {
+            name: "Crystal Spheres",
+            category: "Wildspace Travel",
+            description: "Crystal spheres are gigantic shells that enclose entire solar systems:\n\n• Composition: Crystal spheres are made of an impenetrable material that blocks all magic and physical passage\n• Portals: The only way to enter or exit a crystal sphere is through naturally occurring portals\n• Phlogiston: The space between crystal spheres is filled with the phlogiston, a highly flammable rainbow-colored gas\n• No Magic: Spelljamming helms don't function in the phlogiston; ships must use conventional sails\n• Fire Danger: Any open flame in the phlogiston causes a catastrophic explosion"
+        },
+        {
+            name: "Astral Travel",
+            category: "Planar Travel",
+            description: "The Astral Plane is a realm of thought and dream:\n\n• Timelessness: Creatures don't age, hunger, or thirst in the Astral Plane\n• Psychic Navigation: Travel is accomplished by thought; think of a destination and move toward it\n• Astral Projection: Creatures can project their consciousness into the Astral Plane, leaving their bodies behind\n• Color Pools: Portals to other planes appear as colored pools of light\n• Githyanki: The Astral Plane is home to the githyanki, who sail astral ships and raid other planes\n• Psychic Wind: Occasional psychic storms can blow travelers off course or damage their minds"
+        },
+        {
+            name: "Ship Roles",
+            category: "Wildspace Travel",
+            description: "Crew members can take on specific roles during ship operations:\n\n• Helmsman: Operates the spelljamming helm, controlling movement and speed\n• Captain: Issues orders and makes tactical decisions; can grant advantage to crew checks\n• Bosun: Manages the crew and ship maintenance; can repair damage during combat\n• Gunner: Operates ship weapons; makes attack rolls with siege weapons\n• Lookout: Watches for threats and opportunities; makes Perception checks to spot dangers\n• Surgeon: Tends to wounded crew; can stabilize dying creatures and provide healing"
+        },
+        {
+            name: "Ship Damage",
+            category: "Wildspace Travel",
+            description: "Ships can take damage and be destroyed:\n\n• Hull Points: Ships have hull points based on their size and construction\n• Critical Hits: When a ship is reduced to half hull points, roll on the critical damage table\n• Repairs: Ships can be repaired using carpenter's tools and appropriate materials\n• Sinking: A ship reduced to 0 hull points begins to break apart and becomes unusable\n• Crew Casualties: When a ship takes damage, crew members may be injured or killed\n• Salvage: Destroyed ships can be salvaged for parts and treasure"
+        },
+        {
+            name: "Wildspace Hazards",
+            category: "Wildspace Travel",
+            description: "Wildspace contains many dangers:\n\n• Asteroid Fields: Dense clusters of rocks that can damage ships; require Navigation checks to traverse safely\n• Debris Fields: Remnants of destroyed ships and stations; may contain salvage but also dangers\n• Radiation: Some celestial bodies emit harmful radiation; creatures must make Constitution saves or take damage\n• Extreme Temperatures: Near stars or in deep space, temperature extremes can be deadly\n• Void Predators: Creatures like scavvers and kindori hunt in wildspace\n• Pirate Ambushes: Spelljammer pirates often lurk near trade routes and portals"
+        },
+        {
+            name: "Planar Portals",
+            category: "Planar Travel",
+            description: "Portals connect different planes of existence:\n\n• Types: Portals can be permanent, temporary, or one-way\n• Keys: Some portals require specific items, words, or conditions to activate\n• Identification: A successful Arcana check can reveal a portal's destination and requirements\n• Stability: Unstable portals may close unexpectedly or lead to random destinations\n• Guardians: Important portals are often guarded by creatures or magical wards\n• Creation: High-level spells like gate can create temporary portals"
+        },
+        {
+            name: "Suffocation",
+            category: "Adventuring",
+            description: "A creature can hold its breath for a number of minutes equal to 1 + its Constitution modifier (minimum of 30 seconds).\n\nWhen a creature runs out of breath or is choking, it can survive for a number of rounds equal to its Constitution modifier (minimum of 1 round). At the start of its next turn, it drops to 0 hit points and is dying, and it can't regain hit points or be stabilized until it can breathe again.\n\nIn wildspace, air envelopes provide breathable air, but when air becomes fouled, creatures must make Constitution saves to avoid exhaustion."
+        },
+        {
+            name: "Falling",
+            category: "Adventuring",
+            description: "A fall from a great height is one of the most common hazards. At the end of a fall, a creature takes 1d6 bludgeoning damage for every 10 feet it fell, to a maximum of 20d6. The creature lands prone, unless it avoids taking damage from the fall.\n\nIn wildspace, falling works differently: a creature that falls off a ship continues moving in the same direction at the same speed until it encounters another gravity field. This can result in creatures floating in space indefinitely."
+        }
+    ]
+};
+
+let currentCompendiumCategory = 'spells';
+let compendiumSearchQuery = '';
+
 function showCompendiumCategory(category) {
     document.querySelectorAll('.category-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
     
-    const content = document.getElementById('compendium-content');
-    content.innerHTML = `<h2>${category.charAt(0).toUpperCase() + category.slice(1)}</h2><p>Compendium content coming soon...</p>`;
+    currentCompendiumCategory = category;
+    compendiumSearchQuery = '';
+    document.getElementById('compendium-search').value = '';
+    renderCompendium();
 }
 
 function searchCompendium() {
-    const query = document.getElementById('compendium-search').value.toLowerCase();
-    // Search functionality to be implemented
+    compendiumSearchQuery = document.getElementById('compendium-search').value.toLowerCase();
+    renderCompendium();
+}
+
+function renderCompendium() {
+    const content = document.getElementById('compendium-content');
+    const data = compendiumData[currentCompendiumCategory];
+    
+    let filtered = data;
+    if (compendiumSearchQuery) {
+        filtered = data.filter(item => 
+            item.name.toLowerCase().includes(compendiumSearchQuery) ||
+            (item.description && item.description.toLowerCase().includes(compendiumSearchQuery))
+        );
+    }
+    
+    if (filtered.length === 0) {
+        content.innerHTML = '<p class="empty-state">No results found.</p>';
+        return;
+    }
+    
+    let html = `<h2>${currentCompendiumCategory.charAt(0).toUpperCase() + currentCompendiumCategory.slice(1)}</h2>`;
+    
+    if (currentCompendiumCategory === 'spells') {
+        html += '<div class="compendium-list">';
+        filtered.forEach(spell => {
+            html += `
+                <div class="compendium-item">
+                    <h3>${spell.name}</h3>
+                    <p class="item-meta">
+                        <strong>Level ${spell.level} ${spell.school}</strong> | 
+                        Casting Time: ${spell.castingTime} | 
+                        Range: ${spell.range}
+                    </p>
+                    <p><strong>Components:</strong> ${spell.components}</p>
+                    <p><strong>Duration:</strong> ${spell.duration}</p>
+                    <p>${spell.description}</p>
+                    ${spell.higherLevels ? `<p><strong>At Higher Levels:</strong> ${spell.higherLevels}</p>` : ''}
+                </div>
+            `;
+        });
+        html += '</div>';
+    } else if (currentCompendiumCategory === 'items') {
+        html += '<div class="compendium-list">';
+        filtered.forEach(item => {
+            html += `
+                <div class="compendium-item">
+                    <h3>${item.name}</h3>
+                    <p class="item-meta">
+                        <strong>${item.type}</strong> | 
+                        ${item.rarity} | 
+                        ${item.cost}
+                        ${item.attunement ? ` | ${item.attunement}` : ''}
+                    </p>
+                    ${item.weight ? `<p><strong>Weight:</strong> ${item.weight}</p>` : ''}
+                    ${item.properties ? `<p><strong>Properties:</strong> ${item.properties}</p>` : ''}
+                    <p>${item.description}</p>
+                </div>
+            `;
+        });
+        html += '</div>';
+    } else if (currentCompendiumCategory === 'monsters') {
+        html += '<div class="compendium-list">';
+        filtered.forEach(monster => {
+            html += `
+                <div class="compendium-item monster-stat-block">
+                    <h3>${monster.name}</h3>
+                    <p class="item-meta"><em>${monster.type}, CR ${monster.cr}</em></p>
+                    <hr>
+                    <p><strong>Armor Class:</strong> ${monster.ac}</p>
+                    <p><strong>Hit Points:</strong> ${monster.hp}</p>
+                    <p><strong>Speed:</strong> ${monster.speed}</p>
+                    <hr>
+                    <div class="monster-stats">
+                        <div><strong>STR</strong><br>${monster.stats.str} (${Math.floor((monster.stats.str - 10) / 2) >= 0 ? '+' : ''}${Math.floor((monster.stats.str - 10) / 2)})</div>
+                        <div><strong>DEX</strong><br>${monster.stats.dex} (${Math.floor((monster.stats.dex - 10) / 2) >= 0 ? '+' : ''}${Math.floor((monster.stats.dex - 10) / 2)})</div>
+                        <div><strong>CON</strong><br>${monster.stats.con} (${Math.floor((monster.stats.con - 10) / 2) >= 0 ? '+' : ''}${Math.floor((monster.stats.con - 10) / 2)})</div>
+                        <div><strong>INT</strong><br>${monster.stats.int} (${Math.floor((monster.stats.int - 10) / 2) >= 0 ? '+' : ''}${Math.floor((monster.stats.int - 10) / 2)})</div>
+                        <div><strong>WIS</strong><br>${monster.stats.wis} (${Math.floor((monster.stats.wis - 10) / 2) >= 0 ? '+' : ''}${Math.floor((monster.stats.wis - 10) / 2)})</div>
+                        <div><strong>CHA</strong><br>${monster.stats.cha} (${Math.floor((monster.stats.cha - 10) / 2) >= 0 ? '+' : ''}${Math.floor((monster.stats.cha - 10) / 2)})</div>
+                    </div>
+                    <hr>
+                    ${monster.saves ? `<p><strong>Saving Throws:</strong> ${monster.saves}</p>` : ''}
+                    ${monster.skills ? `<p><strong>Skills:</strong> ${monster.skills}</p>` : ''}
+                    ${monster.immunities ? `<p><strong>Damage Immunities:</strong> ${monster.immunities}</p>` : ''}
+                    <p><strong>Senses:</strong> ${monster.senses}</p>
+                    <p><strong>Languages:</strong> ${monster.languages}</p>
+                    <hr>
+                    ${monster.traits.length > 0 ? monster.traits.map(trait => `
+                        <p><strong>${trait.name}.</strong> ${trait.description}</p>
+                    `).join('') : ''}
+                    <h4>Actions</h4>
+                    ${monster.actions.map(action => `
+                        <p><strong>${action.name}.</strong> ${action.description}</p>
+                    `).join('')}
+                </div>
+            `;
+        });
+        html += '</div>';
+    } else if (currentCompendiumCategory === 'rules') {
+        html += '<div class="compendium-list">';
+        filtered.forEach(rule => {
+            html += `
+                <div class="compendium-item">
+                    <h3>${rule.name}</h3>
+                    <p class="item-meta"><strong>${rule.category}</strong></p>
+                    <p style="white-space: pre-line;">${rule.description}</p>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+    
+    content.innerHTML = html;
 }
