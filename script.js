@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateLevelProgressDisplay();
     updateSessionsDisplay();
     updateDiceHistory();
+    updatePresetsList();
     
     // Make advantage/disadvantage mutually exclusive
     const advantageCheckbox = document.getElementById('advantage');
@@ -246,9 +247,10 @@ function showCharacter(charName) {
     
     document.getElementById('character-content').innerHTML = characters[charName];
     
-    // Initialize HP display after the HTML is rendered
+    // Initialize displays after HTML is rendered
     setTimeout(() => {
         updateHPDisplay(charName);
+        updateConditionsDisplay(charName);
     }, 0);
 }
 
@@ -319,6 +321,21 @@ function getTonySheet() {
                 </div>
             </div>
 
+            <div id="tony-death-saves" class="death-saves" style="display: none;">
+                <h4>Death Saves</h4>
+                <div class="death-save-boxes">
+                    <div>
+                        <strong>Successes:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="tony-success-${i}">`).join('')}
+                    </div>
+                    <div>
+                        <strong>Failures:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="tony-fail-${i}">`).join('')}
+                    </div>
+                </div>
+                <button onclick="stabilize('tony')">Stabilize</button>
+            </div>
+
             <div class="char-section">
                 <h3>Combat Stats</h3>
                 <div class="combat-stats">
@@ -340,18 +357,30 @@ function getTonySheet() {
             <div id="roll-results-tony" class="roll-results"></div>
 
             <div class="char-section">
+                <h3>Hit Dice</h3>
+                <div class="hit-dice-tracker">
+                    <p><strong>Available:</strong> ${char.hitDice} / ${char.maxHitDice} d${char.hitDie}</p>
+                    <button onclick="spendHitDice('tony')" ${char.hitDice === 0 ? 'disabled' : ''}>
+                        Spend Hit Die
+                    </button>
+                </div>
+            </div>
+
+            <div class="char-section">
                 <h3>Spell Slots</h3>
                 <div class="spell-slots-section">
-                    ${char.spellSlots[1].max > 0 ? `
-                    <div class="spell-level">
-                        <strong>Level 1</strong>
-                        <div class="slot-checkboxes">
-                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
-                                <input type="checkbox" id="tony-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('tony', 1, ${i+1})">
-                            `).join('')}
+                    ${Object.entries(char.spellSlots).filter(([level, slots]) => slots.max > 0).map(([level, slots]) => `
+                        <div class="spell-level">
+                            <strong>Level ${level}</strong>
+                            <div class="slot-checkboxes">
+                                ${Array.from({length: slots.max}, (_, i) => `
+                                    <input type="checkbox" id="tony-slot-${level}-${i+1}" 
+                                        ${i < slots.current ? 'checked' : ''} 
+                                        onchange="toggleSpellSlot('tony', ${level}, ${i+1})">
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                    ` : ''}
+                    `).join('')}
                 </div>
                 <div class="rest-buttons">
                     <button onclick="shortRest('tony')">Short Rest</button>
@@ -462,6 +491,21 @@ function getFlowSheet() {
                 </div>
             </div>
 
+            <div id="flow-death-saves" class="death-saves" style="display: none;">
+                <h4>Death Saves</h4>
+                <div class="death-save-boxes">
+                    <div>
+                        <strong>Successes:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="flow-success-${i}">`).join('')}
+                    </div>
+                    <div>
+                        <strong>Failures:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="flow-fail-${i}">`).join('')}
+                    </div>
+                </div>
+                <button onclick="stabilize('flow')">Stabilize</button>
+            </div>
+
             <div class="char-section">
                 <h3>Combat Stats</h3>
                 <div class="combat-stats">
@@ -483,18 +527,30 @@ function getFlowSheet() {
             <div id="roll-results-flow" class="roll-results"></div>
 
             <div class="char-section">
+                <h3>Hit Dice</h3>
+                <div class="hit-dice-tracker">
+                    <p><strong>Available:</strong> ${char.hitDice} / ${char.maxHitDice} d${char.hitDie}</p>
+                    <button onclick="spendHitDice('flow')" ${char.hitDice === 0 ? 'disabled' : ''}>
+                        Spend Hit Die
+                    </button>
+                </div>
+            </div>
+
+            <div class="char-section">
                 <h3>Spell Slots</h3>
                 <div class="spell-slots-section">
-                    ${char.spellSlots[1].max > 0 ? `
-                    <div class="spell-level">
-                        <strong>Level 1</strong>
-                        <div class="slot-checkboxes">
-                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
-                                <input type="checkbox" id="flow-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('flow', 1, ${i+1})">
-                            `).join('')}
+                    ${Object.entries(char.spellSlots).filter(([level, slots]) => slots.max > 0).map(([level, slots]) => `
+                        <div class="spell-level">
+                            <strong>Level ${level}</strong>
+                            <div class="slot-checkboxes">
+                                ${Array.from({length: slots.max}, (_, i) => `
+                                    <input type="checkbox" id="flow-slot-${level}-${i+1}" 
+                                        ${i < slots.current ? 'checked' : ''} 
+                                        onchange="toggleSpellSlot('flow', ${level}, ${i+1})">
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                    ` : ''}
+                    `).join('')}
                 </div>
                 <div class="rest-buttons">
                     <button onclick="shortRest('flow')">Short Rest</button>
@@ -605,6 +661,21 @@ function getBazSheet() {
                 </div>
             </div>
 
+            <div id="baz-death-saves" class="death-saves" style="display: none;">
+                <h4>Death Saves</h4>
+                <div class="death-save-boxes">
+                    <div>
+                        <strong>Successes:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="baz-success-${i}">`).join('')}
+                    </div>
+                    <div>
+                        <strong>Failures:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="baz-fail-${i}">`).join('')}
+                    </div>
+                </div>
+                <button onclick="stabilize('baz')">Stabilize</button>
+            </div>
+
             <div class="char-section">
                 <h3>Combat Stats</h3>
                 <div class="combat-stats">
@@ -626,18 +697,30 @@ function getBazSheet() {
             <div id="roll-results-baz" class="roll-results"></div>
 
             <div class="char-section">
+                <h3>Hit Dice</h3>
+                <div class="hit-dice-tracker">
+                    <p><strong>Available:</strong> ${char.hitDice} / ${char.maxHitDice} d${char.hitDie}</p>
+                    <button onclick="spendHitDice('baz')" ${char.hitDice === 0 ? 'disabled' : ''}>
+                        Spend Hit Die
+                    </button>
+                </div>
+            </div>
+
+            <div class="char-section">
                 <h3>Spell Slots</h3>
                 <div class="spell-slots-section">
-                    ${char.spellSlots[1].max > 0 ? `
-                    <div class="spell-level">
-                        <strong>Level 1</strong>
-                        <div class="slot-checkboxes">
-                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
-                                <input type="checkbox" id="baz-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('baz', 1, ${i+1})">
-                            `).join('')}
+                    ${Object.entries(char.spellSlots).filter(([level, slots]) => slots.max > 0).map(([level, slots]) => `
+                        <div class="spell-level">
+                            <strong>Level ${level}</strong>
+                            <div class="slot-checkboxes">
+                                ${Array.from({length: slots.max}, (_, i) => `
+                                    <input type="checkbox" id="baz-slot-${level}-${i+1}" 
+                                        ${i < slots.current ? 'checked' : ''} 
+                                        onchange="toggleSpellSlot('baz', ${level}, ${i+1})">
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                    ` : ''}
+                    `).join('')}
                 </div>
                 <div class="rest-buttons">
                     <button onclick="shortRest('baz')">Short Rest</button>
@@ -748,6 +831,21 @@ function getWispSheet() {
                 </div>
             </div>
 
+            <div id="wisp-death-saves" class="death-saves" style="display: none;">
+                <h4>Death Saves</h4>
+                <div class="death-save-boxes">
+                    <div>
+                        <strong>Successes:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="wisp-success-${i}">`).join('')}
+                    </div>
+                    <div>
+                        <strong>Failures:</strong>
+                        ${[1,2,3].map(i => `<input type="checkbox" id="wisp-fail-${i}">`).join('')}
+                    </div>
+                </div>
+                <button onclick="stabilize('wisp')">Stabilize</button>
+            </div>
+
             <div class="char-section">
                 <h3>Combat Stats</h3>
                 <div class="combat-stats">
@@ -769,18 +867,30 @@ function getWispSheet() {
             <div id="roll-results-wisp" class="roll-results"></div>
 
             <div class="char-section">
+                <h3>Hit Dice</h3>
+                <div class="hit-dice-tracker">
+                    <p><strong>Available:</strong> ${char.hitDice} / ${char.maxHitDice} d${char.hitDie}</p>
+                    <button onclick="spendHitDice('wisp')" ${char.hitDice === 0 ? 'disabled' : ''}>
+                        Spend Hit Die
+                    </button>
+                </div>
+            </div>
+
+            <div class="char-section">
                 <h3>Spell Slots</h3>
                 <div class="spell-slots-section">
-                    ${char.spellSlots[1].max > 0 ? `
-                    <div class="spell-level">
-                        <strong>Level 1</strong>
-                        <div class="slot-checkboxes">
-                            ${Array.from({length: char.spellSlots[1].max}, (_, i) => `
-                                <input type="checkbox" id="wisp-slot-1-${i+1}" ${i < char.spellSlots[1].current ? 'checked' : ''} onchange="toggleSpellSlot('wisp', 1, ${i+1})">
-                            `).join('')}
+                    ${Object.entries(char.spellSlots).filter(([level, slots]) => slots.max > 0).map(([level, slots]) => `
+                        <div class="spell-level">
+                            <strong>Level ${level}</strong>
+                            <div class="slot-checkboxes">
+                                ${Array.from({length: slots.max}, (_, i) => `
+                                    <input type="checkbox" id="wisp-slot-${level}-${i+1}" 
+                                        ${i < slots.current ? 'checked' : ''} 
+                                        onchange="toggleSpellSlot('wisp', ${level}, ${i+1})">
+                                `).join('')}
+                            </div>
                         </div>
-                    </div>
-                    ` : ''}
+                    `).join('')}
                 </div>
                 <div class="rest-buttons">
                     <button onclick="shortRest('wisp')">Short Rest</button>
@@ -3161,6 +3271,49 @@ function longRest(characterName) {
     saveCampaignData();
 }
 
+// ===== HIT DICE =====
+function spendHitDice(characterName) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char || char.hitDice === 0) return;
+    
+    const roll = Math.floor(Math.random() * char.hitDie) + 1;
+    const healing = roll + char.conModifier;
+    
+    char.hitDice--;
+    char.currentHp = Math.min(char.maxHp, char.currentHp + healing);
+    
+    alert(`${char.name} spends a hit die and rolls ${roll} + ${char.conModifier} = ${healing} HP restored!`);
+    
+    updateHPDisplay(charKey);
+    showCharacter(charKey); // Refresh display
+    saveCampaignData();
+}
+
+// ===== DEATH SAVES =====
+function stabilize(characterName) {
+    const charKey = characterName.toLowerCase();
+    const char = campaignData.characters[charKey];
+    
+    if (!char) return;
+    
+    // Set HP to 1
+    char.currentHp = 1;
+    
+    // Clear death save checkboxes
+    for (let i = 1; i <= 3; i++) {
+        const successBox = document.getElementById(`${charKey}-success-${i}`);
+        const failBox = document.getElementById(`${charKey}-fail-${i}`);
+        if (successBox) successBox.checked = false;
+        if (failBox) failBox.checked = false;
+    }
+    
+    updateHPDisplay(charKey);
+    alert(`${char.name} has been stabilized!`);
+    saveCampaignData();
+}
+
 // ===== MISSING FUNCTIONS =====
 function scrollToTop() {
     const compendiumContent = document.getElementById('compendium-content');
@@ -3173,7 +3326,50 @@ function scrollToTop() {
 }
 
 function updateCompendiumSort() {
+    const sortValue = document.getElementById('compendium-sort').value;
+    const data = compendiumData[currentCompendiumCategory];
+    
+    let sorted = [...data];
+    
+    switch(sortValue) {
+        case 'name-asc':
+            sorted.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case 'name-desc':
+            sorted.sort((a, b) => b.name.localeCompare(a.name));
+            break;
+        case 'level-asc':
+            if (currentCompendiumCategory === 'spells') {
+                sorted.sort((a, b) => a.level - b.level);
+            }
+            break;
+        case 'level-desc':
+            if (currentCompendiumCategory === 'spells') {
+                sorted.sort((a, b) => b.level - a.level);
+            }
+            break;
+        case 'cr-asc':
+            if (currentCompendiumCategory === 'monsters') {
+                sorted.sort((a, b) => parseCR(a.cr) - parseCR(b.cr));
+            }
+            break;
+        case 'cr-desc':
+            if (currentCompendiumCategory === 'monsters') {
+                sorted.sort((a, b) => parseCR(b.cr) - parseCR(a.cr));
+            }
+            break;
+    }
+    
+    compendiumData[currentCompendiumCategory] = sorted;
     renderCompendium();
+}
+
+function parseCR(cr) {
+    if (cr.includes('/')) {
+        const parts = cr.split('/');
+        return parseInt(parts[0]) / parseInt(parts[1]);
+    }
+    return parseInt(cr);
 }
 
 // ===== CONDITIONS TRACKER =====
@@ -3244,4 +3440,42 @@ function updateConditionsDisplay(charKey) {
     html += '</div>';
     
     conditionsDiv.innerHTML = html;
+}
+
+// ===== EXPORT/IMPORT CAMPAIGN DATA =====
+function exportCampaignData() {
+    const dataStr = JSON.stringify(campaignData, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `feyspace-campaign-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importCampaignData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = event => {
+            try {
+                const imported = JSON.parse(event.target.result);
+                if (confirm('This will overwrite your current campaign. Continue?')) {
+                    campaignData = imported;
+                    saveCampaignData();
+                    location.reload();
+                }
+            } catch (error) {
+                alert('Invalid campaign file!');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
 }
